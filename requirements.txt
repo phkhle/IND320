@@ -1,2 +1,4 @@
-pandas
-matplotlib.pyplot
+# Specify the required packages
+pandas==2.2.0
+matplotlib==3.8.2
+scikit-learn==1.4.0
