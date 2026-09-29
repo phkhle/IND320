@@ -4,6 +4,9 @@ import streamlit as st
 # Home page for the IND320 project
 # --------------------------------------------------
 
+# Set name of the home page
+home_page = st.Page("streamlit_app.py", title="Home", icon="🏠")
+
 st.set_page_config(
     page_title="IND320 Reservoir Project",
     layout="wide"
