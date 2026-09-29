@@ -20,6 +20,7 @@ st.write(
 # Load data
 # --------------------------------------------------
 
+# decorator to cache the data loading function
 @st.cache_data
 def load_data():
     """
@@ -74,7 +75,7 @@ for column in df.columns:
     # Get the first observation in the column.
     first_value = df[column].iloc[0]
 
-    # Only the actual reservoir measurements should
+    # Only the numerical reservoir measurements should
     # be displayed as line-chart series.
     if column in measurement_columns:
         series = df[column].tolist()

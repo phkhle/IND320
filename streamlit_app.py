@@ -4,14 +4,6 @@ import streamlit as st
 # Home page for the IND320 project
 # --------------------------------------------------
 
-# Set name of the home page
-home_page = st.Page("streamlit_app.py", title="Home", icon="🏠")
-
-st.set_page_config(
-    page_title="IND320 Reservoir Project",
-    layout="wide"
-)
-
 st.title("IND320 Reservoir Project")
 
 st.write(
@@ -37,8 +29,8 @@ st.write(
     """
     Use the sidebar on the left to navigate between:
 
-    - Data — explore the reservoir data
     - Table — view the data in a table format
     - Plot — create interactive plots
+    - Test — for future development
     """
 )

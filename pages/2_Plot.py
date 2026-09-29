@@ -42,7 +42,7 @@ df["dato_Id"] = pd.to_datetime(df["dato_Id"])
 
 
 # --------------------------------------------------
-# Define the actual measurement columns
+# Define the numerical measurement columns
 # --------------------------------------------------
 
 measurement_columns = [
