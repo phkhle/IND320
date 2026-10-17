@@ -1,20 +1,16 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # --------------------------------------------------
-# 2_Plot.py
+# Title
 # --------------------------------------------------
 
 st.title("Reservoir Data Plot")
 
 st.write(
-    """
-    This page shows the development of the reservoir
-    measurements over time.
-    """
+    "This page shows the development of reservoir "
+    "measurements over time for different area types."
 )
-
 
 # --------------------------------------------------
 # Load data
@@ -22,27 +18,15 @@ st.write(
 
 @st.cache_data
 def load_data():
-    """
-    Load the reservoir data from the local CSV file.
-
-    Streamlit caches the result so the CSV does not need
-    to be read from disk every time the application reruns.
-    """
     return pd.read_csv("reservoirs.csv")
 
 
 df = load_data()
 
-
-# --------------------------------------------------
-# Convert date column
-# --------------------------------------------------
-
 df["dato_Id"] = pd.to_datetime(df["dato_Id"])
 
-
 # --------------------------------------------------
-# Define the numerical measurement columns
+# Measurement columns
 # --------------------------------------------------
 
 measurement_columns = [
@@ -53,114 +37,92 @@ measurement_columns = [
     "endring_fyllingsgrad"
 ]
 
-
 # --------------------------------------------------
-# Create a month column
+# Create month column
 # --------------------------------------------------
 
 df["month"] = df["dato_Id"].dt.to_period("M")
 
-
 # --------------------------------------------------
-# Calculate monthly averages
+# Calculate monthly averages for each areaType
 # --------------------------------------------------
 
 monthly_df = (
-    df.groupby("month")[measurement_columns]
+    df.groupby(["month", "areaType"])[measurement_columns]
     .mean()
     .reset_index()
 )
 
-
-# --------------------------------------------------
-# Convert Period to timestamp
-# --------------------------------------------------
-
 monthly_df["month"] = monthly_df["month"].dt.to_timestamp()
 
-
 # --------------------------------------------------
-# Select data series
+# Select measurement
 # --------------------------------------------------
-
-column_options = ["All columns"] + measurement_columns
 
 selected_column = st.selectbox(
-    "Select data to plot:",
-    column_options
+    "Select measurement:",
+    ["All columns"] + measurement_columns
 )
 
-
 # --------------------------------------------------
-# Select month
+# Select month range
 # --------------------------------------------------
 
-months = monthly_df["month"].tolist()
+months = sorted(monthly_df["month"].unique())
 
-selected_month = st.select_slider(
-    "Select the last month to display:",
+start_month, end_month = st.select_slider(
+    "Select month range:",
     options=months,
-    value=months[0],
-    format_func=lambda x: x.strftime("%Y-%m")
+    value=(months[0], months[-1]),
+    format_func=lambda x: pd.Timestamp(x).strftime("%Y-%m")
 )
 
-
 # --------------------------------------------------
-# Select the subset of months
+# Filter data
 # --------------------------------------------------
 
 plot_df = monthly_df[
-    monthly_df["month"] <= selected_month
+    (monthly_df["month"] >= start_month)
+    & (monthly_df["month"] <= end_month)
 ].copy()
 
-
 # --------------------------------------------------
-# Create the plot
+# Interactive plot
 # --------------------------------------------------
-
-fig, ax = plt.subplots(figsize=(12, 6))
-
 
 if selected_column == "All columns":
 
-    for column in measurement_columns:
+    # Convert wide data to long format
+    long_df = plot_df.melt(
+        id_vars=["month", "areaType"],
+        value_vars=measurement_columns,
+        var_name="measurement",
+        value_name="value"
+    )
 
-        ax.plot(
-            plot_df["month"],
-            plot_df[column],
-            label=column
-        )
+    # Create separate series for each combination
+    long_df["series"] = (
+        long_df["areaType"].astype(str)
+        + " - "
+        + long_df["measurement"]
+    )
+
+    st.line_chart(
+        long_df,
+        x="month",
+        y="value",
+        color="series",
+        x_label="Month",
+        y_label="Value"
+    )
 
 else:
 
-    ax.plot(
-        plot_df["month"],
-        plot_df[selected_column],
-        label=selected_column
+    st.line_chart(
+        plot_df,
+        x="month",
+        y=selected_column,
+        color="areaType",
+        x_label="Month",
+        y_label=selected_column
     )
-
-
-# --------------------------------------------------
-# Format the plot
-# --------------------------------------------------
-
-ax.set_title("Monthly Reservoir Measurements")
-
-ax.set_xlabel("Month")
-
-ax.set_ylabel("Value")
-
-ax.grid(True)
-
-ax.legend()
-
-plt.xticks(rotation=45)
-
-plt.tight_layout()
-
-
-# --------------------------------------------------
-# Display the plot
-# --------------------------------------------------
-
-st.pyplot(fig)
