@@ -8,8 +8,7 @@ import pandas as pd
 st.title("Reservoir Data Plot")
 
 st.write(
-    "This page shows the development of reservoir "
-    "measurements over time for different area types."
+    "Explore monthly reservoir measurements by area type."
 )
 
 # --------------------------------------------------
@@ -44,7 +43,7 @@ measurement_columns = [
 df["month"] = df["dato_Id"].dt.to_period("M")
 
 # --------------------------------------------------
-# Calculate monthly averages for each omrType
+# Monthly averages by area type
 # --------------------------------------------------
 
 monthly_df = (
@@ -54,6 +53,15 @@ monthly_df = (
 )
 
 monthly_df["month"] = monthly_df["month"].dt.to_timestamp()
+
+# --------------------------------------------------
+# Select area type
+# --------------------------------------------------
+
+selected_area = st.selectbox(
+    "Select area type:",
+    sorted(monthly_df["omrType"].unique())
+)
 
 # --------------------------------------------------
 # Select measurement
@@ -82,7 +90,8 @@ start_month, end_month = st.select_slider(
 # --------------------------------------------------
 
 plot_df = monthly_df[
-    (monthly_df["month"] >= start_month)
+    (monthly_df["omrType"] == selected_area)
+    & (monthly_df["month"] >= start_month)
     & (monthly_df["month"] <= end_month)
 ].copy()
 
@@ -90,28 +99,14 @@ plot_df = monthly_df[
 # Interactive plot
 # --------------------------------------------------
 
+st.subheader(f"Reservoir measurements - {selected_area}")
+
 if selected_column == "All columns":
 
-    # Convert wide data to long format
-    long_df = plot_df.melt(
-        id_vars=["month", "omrType"],
-        value_vars=measurement_columns,
-        var_name="measurement",
-        value_name="value"
-    )
-
-    # Create separate series for each combination
-    long_df["series"] = (
-        long_df["omrType"].astype(str)
-        + " - "
-        + long_df["measurement"]
-    )
-
     st.line_chart(
-        long_df,
+        plot_df,
         x="month",
-        y="value",
-        color="series",
+        y=measurement_columns,
         x_label="Month",
         y_label="Value"
     )
@@ -122,7 +117,6 @@ else:
         plot_df,
         x="month",
         y=selected_column,
-        color="omrType",
         x_label="Month",
         y_label=selected_column
     )
