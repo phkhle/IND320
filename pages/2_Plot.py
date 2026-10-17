@@ -142,3 +142,37 @@ else:
         y_label=selected_column,
         color=None
     )
+
+
+
+
+# --------------------------------------------------
+# Data table with LineChartColumn
+# --------------------------------------------------
+
+st.subheader("Monthly trends per area")
+
+if not plot_df.empty:
+
+    # One row per area, one column per month
+    trends_df = plot_df.T.copy()
+
+    # Store monthly values as a list for each area
+    trends_df["Trend"] = trends_df.apply(
+        lambda row: row.tolist(),
+        axis=1
+    )
+
+    trends_df = trends_df[["Trend"]]
+
+    st.dataframe(
+        trends_df,
+        column_config={
+            "Trend": st.column_config.LineChartColumn(
+                "Monthly trend",
+                help="Monthly average values for the selected period",
+                y_min=0 if selected_column == "fyllingsgrad" else None,
+            )
+        },
+        use_container_width=True
+    )
