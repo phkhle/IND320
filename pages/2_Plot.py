@@ -44,11 +44,11 @@ measurement_columns = [
 df["month"] = df["dato_Id"].dt.to_period("M")
 
 # --------------------------------------------------
-# Calculate monthly averages for each areaType
+# Calculate monthly averages for each omrType
 # --------------------------------------------------
 
 monthly_df = (
-    df.groupby(["month", "areaType"])[measurement_columns]
+    df.groupby(["month", "omrType"])[measurement_columns]
     .mean()
     .reset_index()
 )
@@ -94,7 +94,7 @@ if selected_column == "All columns":
 
     # Convert wide data to long format
     long_df = plot_df.melt(
-        id_vars=["month", "areaType"],
+        id_vars=["month", "omrType"],
         value_vars=measurement_columns,
         var_name="measurement",
         value_name="value"
@@ -102,7 +102,7 @@ if selected_column == "All columns":
 
     # Create separate series for each combination
     long_df["series"] = (
-        long_df["areaType"].astype(str)
+        long_df["omrType"].astype(str)
         + " - "
         + long_df["measurement"]
     )
@@ -122,7 +122,7 @@ else:
         plot_df,
         x="month",
         y=selected_column,
-        color="areaType",
+        color="omrType",
         x_label="Month",
         y_label=selected_column
     )
