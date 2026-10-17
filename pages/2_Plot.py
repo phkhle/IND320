@@ -1,12 +1,14 @@
+
 import streamlit as st
 import pandas as pd
-# Import the get_nve_data function from NVE_API.py
+
+# Import function from NVE_API.py
 from NVE_API import get_nve_data
 
 
-# --------------------------------------------------
-# Title
-# --------------------------------------------------
+# ============================================================
+# 1. TITLE
+# ============================================================
 
 st.title("Reservoir Data Plot")
 
@@ -16,9 +18,9 @@ st.write(
 )
 
 
-# --------------------------------------------------
-# Load data from NVE API
-# --------------------------------------------------
+# ============================================================
+# 2. LOAD DATA FROM NVE API
+# ============================================================
 
 @st.cache_data(ttl=3600)
 def load_data():
@@ -27,10 +29,13 @@ def load_data():
 
 df = load_data()
 
+# Ensure date column is datetime
+df["dato_Id"] = pd.to_datetime(df["dato_Id"])
 
-# --------------------------------------------------
-# Measurement columns
-# --------------------------------------------------
+
+# ============================================================
+# 3. MEASUREMENT COLUMNS
+# ============================================================
 
 measurement_columns = [
     "fyllingsgrad",
@@ -41,16 +46,16 @@ measurement_columns = [
 ]
 
 
-# --------------------------------------------------
-# Create month column
-# --------------------------------------------------
+# ============================================================
+# 4. CREATE MONTH COLUMN
+# ============================================================
 
 df["month"] = df["dato_Id"].dt.to_period("M")
 
 
-# --------------------------------------------------
-# Select area type (EL, NO, VASS)
-# --------------------------------------------------
+# ============================================================
+# 5. SELECT AREA TYPE
+# ============================================================
 
 selected_area = st.radio(
     "Select area type:",
@@ -59,21 +64,21 @@ selected_area = st.radio(
 )
 
 
-# --------------------------------------------------
-# Select measurement
-# --------------------------------------------------
+# ============================================================
+# 6. SELECT MEASUREMENT
+# ============================================================
 
 selected_column = st.selectbox(
     "Select measurement:",
-    measurement_columns
+    ["All columns"] + measurement_columns
 )
 
 
-# --------------------------------------------------
-# Select month range
-# --------------------------------------------------
+# ============================================================
+# 7. SELECT MONTH RANGE
+# ============================================================
 
-months = sorted(df["month"].unique())
+months = sorted(df["month"].dropna().unique())
 
 start_month, end_month = st.select_slider(
     "Select month range:",
@@ -83,9 +88,9 @@ start_month, end_month = st.select_slider(
 )
 
 
-# --------------------------------------------------
-# Filter data
-# --------------------------------------------------
+# ============================================================
+# 8. FILTER DATA
+# ============================================================
 
 filtered_df = df[
     (df["omrType"] == selected_area)
@@ -94,13 +99,13 @@ filtered_df = df[
 ].copy()
 
 
-# --------------------------------------------------
-# Monthly average per area number
-# --------------------------------------------------
+# ============================================================
+# 9. MONTHLY AVERAGES PER AREA NUMBER
+# ============================================================
 
 monthly_df = (
     filtered_df
-    .groupby(["month", "omrnr"])[selected_column]
+    .groupby(["month", "omrnr"])[measurement_columns]
     .mean()
     .reset_index()
 )
@@ -108,71 +113,151 @@ monthly_df = (
 monthly_df["month"] = monthly_df["month"].dt.to_timestamp()
 
 
-# --------------------------------------------------
-# Pivot: one column per area number
-# --------------------------------------------------
+# ============================================================
+# 10. FUNCTION TO CREATE PLOT DATA
+# ============================================================
 
-plot_df = monthly_df.pivot(
-    index="month",
-    columns="omrnr",
-    values=selected_column
-)
+def create_plot_data(data, measurement):
+    """
+    Create a dataframe with:
+    - One row per month
+    - One column per area number
+    """
 
-plot_df.columns = [
-    f"Area {area_nr}"
-    for area_nr in plot_df.columns
-]
+    plot_df = data.pivot(
+        index="month",
+        columns="omrnr",
+        values=measurement
+    )
+
+    plot_df = plot_df.sort_index()
+
+    plot_df.columns = [
+        f"Area {area_nr}"
+        for area_nr in plot_df.columns
+    ]
+
+    return plot_df
 
 
-# --------------------------------------------------
-# Interactive plot
-# --------------------------------------------------
+# ============================================================
+# 11. INTERACTIVE PLOTS
+# ============================================================
 
-st.subheader(
-    f"{selected_column} - {selected_area}"
-)
+if monthly_df.empty:
 
-if plot_df.empty:
     st.warning("No data available for the selected period.")
 
+elif selected_column == "All columns":
+
+    # Plot each measurement separately
+    for measurement in measurement_columns:
+
+        st.subheader(f"{measurement} - {selected_area}")
+
+        plot_df = create_plot_data(
+            monthly_df,
+            measurement
+        )
+
+        st.line_chart(
+            plot_df,
+            x_label="Month",
+            y_label=measurement
+        )
+
 else:
+
+    # Plot only the selected measurement
+    st.subheader(f"{selected_column} - {selected_area}")
+
+    plot_df = create_plot_data(
+        monthly_df,
+        selected_column
+    )
+
     st.line_chart(
         plot_df,
         x_label="Month",
-        y_label=selected_column,
-        color=None
+        y_label=selected_column
     )
 
 
-
-
-# --------------------------------------------------
-# Data table with LineChartColumn
-# --------------------------------------------------
+# ============================================================
+# 12. LINECHARTCOLUMN - MONTHLY TRENDS PER AREA
+# ============================================================
 
 st.subheader("Monthly trends per area")
 
-if not plot_df.empty:
+# When All columns is selected, use filling level
+# for the trend table.
+trend_measurement = (
+    "fyllingsgrad"
+    if selected_column == "All columns"
+    else selected_column
+)
 
-    # One row per area, one column per month
-    trends_df = plot_df.T.copy()
+if not monthly_df.empty:
 
-    # Store monthly values as a list for each area
-    trends_df["Trend"] = trends_df.apply(
-        lambda row: row.tolist(),
-        axis=1
-    )
+    trend_df = monthly_df.pivot(
+        index="month",
+        columns="omrnr",
+        values=trend_measurement
+    ).sort_index()
 
-    trends_df = trends_df[["Trend"]]
+    # One row per area number
+    trends_table = pd.DataFrame({
+        "Area": [
+            f"Area {area_nr}"
+            for area_nr in trend_df.columns
+        ],
+        "Trend": [
+            trend_df[area_nr].tolist()
+            for area_nr in trend_df.columns
+        ]
+    })
 
     st.dataframe(
-        trends_df,
+        trends_table,
         column_config={
+            "Area": st.column_config.TextColumn(
+                "Area number"
+            ),
             "Trend": st.column_config.LineChartColumn(
                 "Monthly trend",
-                help="Monthly average values for the selected period",
-                y_min=0 if selected_column == "fyllingsgrad" else None,
+                help=(
+                    f"Monthly average of {trend_measurement} "
+                    f"for the selected period"
+                ),
+                y_min=(
+                    0
+                    if trend_measurement == "fyllingsgrad"
+                    else None
+                )
             )
         },
+        hide_index=True,
         use_container_width=True
+    )
+
+
+# ============================================================
+# 13. DATA SOURCE
+# ============================================================
+
+with st.expander("Data source"):
+    st.write(
+        "Reservoir statistics are retrieved from "
+        "the Norwegian Water Resources and Energy "
+        "Directorate (NVE) API."
+    )
+
+    st.write(
+        "The weekly observations are aggregated "
+        "into monthly averages for each area number."
+    )
+
+    st.markdown(
+        "[NVE Magasinstatistikk API]"
+        "(https://biapi.nve.no/magasinstatistikk/swagger/index.html)"
     )
