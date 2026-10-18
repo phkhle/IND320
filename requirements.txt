@@ -4,3 +4,10 @@ pandas
 matplotlib
 scikit-learn
 requests
+entsoe-py
+cassandra-driver
+pymongo
+pyspark
+python-dotenv
+pymongo
+json

@@ -1,0 +1,56 @@
+[
+  {
+    "connection": "NO1-SE3",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2026-10",
+    "total_import_mwh": 5928.0,
+    "total_export_mwh": 10728.0
+  }
+]
