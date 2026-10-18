@@ -11,3 +11,4 @@ pyspark
 python-dotenv
 pymongo
 json
+plotly
