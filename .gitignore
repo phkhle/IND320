@@ -1,0 +1,2 @@
+# gitignore will ignore the .enf file
+.env
