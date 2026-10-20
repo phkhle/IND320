@@ -23,7 +23,12 @@ def get_mongodb_data(collection_name):
         import streamlit as st
         uri = st.secrets.get("MONGODB_URI")
 
-   
+    if not uri:
+        raise ValueError(
+        "MONGODB_URI is missing from both .env and Streamlit Secrets"
+    )
+
+    
     client = MongoClient(
         uri,
         serverSelectionTimeoutMS=10000
