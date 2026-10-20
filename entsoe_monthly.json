@@ -1,0 +1,1514 @@
+[
+  {
+    "connection": "NO2-NL",
+    "month": "2024-01",
+    "total_import_mwh": 119935.29749999994,
+    "total_export_mwh": 131180.70249999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-05",
+    "total_import_mwh": 45162.86249999998,
+    "total_export_mwh": 321748.02999999485,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-06",
+    "total_import_mwh": 54663.12749999987,
+    "total_export_mwh": 288637.5149999982,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-07",
+    "total_import_mwh": 53718.12749999994,
+    "total_export_mwh": 283767.627499998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-10",
+    "total_import_mwh": 10642.38,
+    "total_export_mwh": 375758.0450000028,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-12",
+    "total_import_mwh": 19823.390000000025,
+    "total_export_mwh": 356156.20749999955,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-01",
+    "total_import_mwh": 12733.577499999989,
+    "total_export_mwh": 391696.6624999979,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-02",
+    "total_import_mwh": 3600.0150000000012,
+    "total_export_mwh": 345427.69499999395,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-06",
+    "total_import_mwh": 52329.23999999998,
+    "total_export_mwh": 185092.1324999975,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-07",
+    "total_import_mwh": 51761.86499999999,
+    "total_export_mwh": 294356.229999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-08",
+    "total_import_mwh": 114105.77000000022,
+    "total_export_mwh": 186805.50249999977,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-06",
+    "total_import_mwh": 56903.102499999986,
+    "total_export_mwh": 9942.66,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-08",
+    "total_import_mwh": 111035.6549999998,
+    "total_export_mwh": 917.0399999999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-12",
+    "total_import_mwh": 30330.727500000005,
+    "total_export_mwh": 48037.570000000036,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-01",
+    "total_import_mwh": 11520.639999999992,
+    "total_export_mwh": 66630.20999999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-03",
+    "total_import_mwh": 25016.449999999997,
+    "total_export_mwh": 869317.6100000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-07",
+    "total_import_mwh": 9703.24,
+    "total_export_mwh": 1039344.5899999993,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-09",
+    "total_import_mwh": 890.31,
+    "total_export_mwh": 1014033.7975000021,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-11",
+    "total_import_mwh": 7204.454999999997,
+    "total_export_mwh": 861966.6050000009,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-12",
+    "total_import_mwh": 6703.154999999998,
+    "total_export_mwh": 857771.1574999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-01",
+    "total_import_mwh": 2899.01,
+    "total_export_mwh": 1015263.0700000015,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-06",
+    "total_import_mwh": 67791.635,
+    "total_export_mwh": 695148.4900000012,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-07",
+    "total_import_mwh": 14390.739999999998,
+    "total_export_mwh": 993548.4449999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-12",
+    "total_import_mwh": 19097.666955750003,
+    "total_export_mwh": 905620.4502747504,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-01",
+    "total_import_mwh": 64053.87000000003,
+    "total_export_mwh": 102170.06000000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-04",
+    "total_import_mwh": 13500.4125,
+    "total_export_mwh": 31997.91,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-05",
+    "total_import_mwh": 174609.98749999993,
+    "total_export_mwh": 30401.8275,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-06",
+    "total_import_mwh": 104698.04,
+    "total_export_mwh": 44833.33999999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-07",
+    "total_import_mwh": 223957.69249999995,
+    "total_export_mwh": 12165.6125,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-08",
+    "total_import_mwh": 212362.19499999986,
+    "total_export_mwh": 3839.087499999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-01",
+    "total_import_mwh": 69858.43499999998,
+    "total_export_mwh": 80843.21999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-03",
+    "total_import_mwh": 55790.390000000014,
+    "total_export_mwh": 41782.51000000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-04",
+    "total_import_mwh": 67825.32749999994,
+    "total_export_mwh": 27037.24000000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-05",
+    "total_import_mwh": 3843.3875,
+    "total_export_mwh": 245817.90000000017,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-07",
+    "total_import_mwh": 3798.235000000001,
+    "total_export_mwh": 170204.47999999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-08",
+    "total_import_mwh": 3049.2425000000003,
+    "total_export_mwh": 120065.02000000005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-10",
+    "total_import_mwh": 72246.58183425022,
+    "total_export_mwh": 72033.71520350005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-11",
+    "total_import_mwh": 52553.898226250014,
+    "total_export_mwh": 109098.04283525018,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-02",
+    "total_import_mwh": 37597.75000000001,
+    "total_export_mwh": 245431.95249999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-03",
+    "total_import_mwh": 71636.00749999996,
+    "total_export_mwh": 242493.72500000015,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-04",
+    "total_import_mwh": 95939.34499999993,
+    "total_export_mwh": 213234.17499999737,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-08",
+    "total_import_mwh": 44284.450000000055,
+    "total_export_mwh": 351712.31749999843,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-09",
+    "total_import_mwh": 25851.492500000022,
+    "total_export_mwh": 313011.7475000006,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2024-11",
+    "total_import_mwh": 16853.707499999986,
+    "total_export_mwh": 373538.31500000274,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-03",
+    "total_import_mwh": 37150.95,
+    "total_export_mwh": 323592.1449999954,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-04",
+    "total_import_mwh": 0.0,
+    "total_export_mwh": 3852.9024999999992,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-05",
+    "total_import_mwh": 0.0,
+    "total_export_mwh": 0.0,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-09",
+    "total_import_mwh": 57721.58749999997,
+    "total_export_mwh": 246110.9399999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-10",
+    "total_import_mwh": 31238.019999999964,
+    "total_export_mwh": 201991.42499999976,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-11",
+    "total_import_mwh": 37430.709999999934,
+    "total_export_mwh": 228294.0425000025,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-NL",
+    "month": "2025-12",
+    "total_import_mwh": 17693.022499999992,
+    "total_export_mwh": 383789.4774999957,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-01",
+    "total_import_mwh": 13547.610000000002,
+    "total_export_mwh": 48153.50999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-02",
+    "total_import_mwh": 25922.29999999999,
+    "total_export_mwh": 42815.170000000006,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-03",
+    "total_import_mwh": 11287.159999999998,
+    "total_export_mwh": 55169.40000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-04",
+    "total_import_mwh": 17011.875000000004,
+    "total_export_mwh": 56952.49999999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-05",
+    "total_import_mwh": 77145.3625,
+    "total_export_mwh": 12376.03000000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-07",
+    "total_import_mwh": 89231.81750000002,
+    "total_export_mwh": 4025.6899999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-09",
+    "total_import_mwh": 86720.3725000001,
+    "total_export_mwh": 2250.4599999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-10",
+    "total_import_mwh": 51147.54500000001,
+    "total_export_mwh": 18271.43,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2024-11",
+    "total_import_mwh": 22351.07750000001,
+    "total_export_mwh": 35040.469999999994,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-02",
+    "total_import_mwh": 8866.065000000004,
+    "total_export_mwh": 36925.23000000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-03",
+    "total_import_mwh": 12561.592499999999,
+    "total_export_mwh": 42812.109999999964,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-04",
+    "total_import_mwh": 1678.9000000000003,
+    "total_export_mwh": 53731.950000000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-05",
+    "total_import_mwh": 3797.629999999999,
+    "total_export_mwh": 59804.34999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-06",
+    "total_import_mwh": 10040.404999999997,
+    "total_export_mwh": 51923.45999999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-07",
+    "total_import_mwh": 8141.392500000004,
+    "total_export_mwh": 29484.590000000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-08",
+    "total_import_mwh": 10844.992499999998,
+    "total_export_mwh": 34099.43999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-09",
+    "total_import_mwh": 7755.347500000011,
+    "total_export_mwh": 59973.807499999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-10",
+    "total_import_mwh": 9981.55515575001,
+    "total_export_mwh": 65431.092544000065,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-11",
+    "total_import_mwh": 10413.10641175,
+    "total_export_mwh": 67140.21826499987,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE2",
+    "month": "2025-12",
+    "total_import_mwh": 40410.61307049999,
+    "total_export_mwh": 20676.271515999993,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-01",
+    "total_import_mwh": 55890.83999999999,
+    "total_export_mwh": 585292.9599999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-02",
+    "total_import_mwh": 35782.17999999999,
+    "total_export_mwh": 736387.3000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-04",
+    "total_import_mwh": 104477.5275000001,
+    "total_export_mwh": 700302.5000000005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-05",
+    "total_import_mwh": 0.0,
+    "total_export_mwh": 1037147.397499999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-06",
+    "total_import_mwh": 4532.289999999997,
+    "total_export_mwh": 922799.2524999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-08",
+    "total_import_mwh": 23113.937500000004,
+    "total_export_mwh": 894583.7099999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2024-10",
+    "total_import_mwh": 0.0,
+    "total_export_mwh": 669741.6800000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-02",
+    "total_import_mwh": 3151.7200000000007,
+    "total_export_mwh": 867442.2150000014,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-03",
+    "total_import_mwh": 9294.38,
+    "total_export_mwh": 709401.8950000011,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-04",
+    "total_import_mwh": 3573.1525,
+    "total_export_mwh": 875988.8150000022,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-05",
+    "total_import_mwh": 60174.64999999999,
+    "total_export_mwh": 855214.9400000008,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-08",
+    "total_import_mwh": 31333.5975,
+    "total_export_mwh": 642476.5674999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-09",
+    "total_import_mwh": 61388.67499999997,
+    "total_export_mwh": 654561.9275000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-10",
+    "total_import_mwh": 60452.93733825001,
+    "total_export_mwh": 857417.6361697504,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-GB",
+    "month": "2025-11",
+    "total_import_mwh": 116669.1294809999,
+    "total_export_mwh": 691439.9616347495,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-02",
+    "total_import_mwh": 89152.06000000007,
+    "total_export_mwh": 89471.64,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-03",
+    "total_import_mwh": 45980.57999999997,
+    "total_export_mwh": 122899.58,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-09",
+    "total_import_mwh": 168267.50500000006,
+    "total_export_mwh": 11540.175000000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-10",
+    "total_import_mwh": 119210.15749999997,
+    "total_export_mwh": 71223.1800000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-11",
+    "total_import_mwh": 86027.16500000004,
+    "total_export_mwh": 101737.70750000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2024-12",
+    "total_import_mwh": 123450.3325,
+    "total_export_mwh": 98108.68499999991,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-02",
+    "total_import_mwh": 25988.502499999995,
+    "total_export_mwh": 68663.41750000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-06",
+    "total_import_mwh": 17845.527499999997,
+    "total_export_mwh": 207913.31,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-09",
+    "total_import_mwh": 24337.774999999994,
+    "total_export_mwh": 91912.22749999985,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-SE1",
+    "month": "2025-12",
+    "total_import_mwh": 125403.27717075014,
+    "total_export_mwh": 59554.61588025006,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-03",
+    "total_import_mwh": 134536.01500000004,
+    "total_export_mwh": 567182.4399999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-04",
+    "total_import_mwh": 136076.35499999992,
+    "total_export_mwh": 566684.0799999969,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-05",
+    "total_import_mwh": 86879.24000000005,
+    "total_export_mwh": 680609.8000000021,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-06",
+    "total_import_mwh": 101165.855,
+    "total_export_mwh": 630870.6800000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-07",
+    "total_import_mwh": 121093.38000000002,
+    "total_export_mwh": 651030.1199999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-10",
+    "total_import_mwh": 47489.41499999998,
+    "total_export_mwh": 627673.3599999977,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-11",
+    "total_import_mwh": 40778.21999999998,
+    "total_export_mwh": 628384.9600000007,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-12",
+    "total_import_mwh": 24472.635000000017,
+    "total_export_mwh": 658735.2400000028,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-01",
+    "total_import_mwh": 52403.210000000014,
+    "total_export_mwh": 701828.3600000016,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-05",
+    "total_import_mwh": 165074.45,
+    "total_export_mwh": 533304.5599999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-06",
+    "total_import_mwh": 163556.90750000006,
+    "total_export_mwh": 432986.6800000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-07",
+    "total_import_mwh": 53483.01249999999,
+    "total_export_mwh": 608775.1199999992,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-09",
+    "total_import_mwh": 32173.932999999994,
+    "total_export_mwh": 631223.2399999942,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-10",
+    "total_import_mwh": 51975.32324999997,
+    "total_export_mwh": 728980.1199999992,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-11",
+    "total_import_mwh": 3903.3709999999987,
+    "total_export_mwh": 812254.519999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-01",
+    "total_import_mwh": 3863.490000000002,
+    "total_export_mwh": 26099.262500000023,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-02",
+    "total_import_mwh": 1623.1999999999987,
+    "total_export_mwh": 23438.95250000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-05",
+    "total_import_mwh": 3222.180000000017,
+    "total_export_mwh": 17708.137500000037,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-04",
+    "total_import_mwh": 22373.984999999986,
+    "total_export_mwh": 4842.334999999986,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-08",
+    "total_import_mwh": 352.7650000000003,
+    "total_export_mwh": 26676.099999999966,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-01",
+    "total_import_mwh": 251973.3299999999,
+    "total_export_mwh": 33488.319999999985,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-03",
+    "total_import_mwh": 238598.27000000005,
+    "total_export_mwh": 51211.659999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-04",
+    "total_import_mwh": 203588.77250000008,
+    "total_export_mwh": 58928.090000000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-06",
+    "total_import_mwh": 223996.98000000007,
+    "total_export_mwh": 40200.310000000005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-08",
+    "total_import_mwh": 362086.2049999999,
+    "total_export_mwh": 6067.580000000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-11",
+    "total_import_mwh": 142489.8150000001,
+    "total_export_mwh": 70336.18999999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-12",
+    "total_import_mwh": 196956.4425000002,
+    "total_export_mwh": 83071.08999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-03",
+    "total_import_mwh": 110076.90499999998,
+    "total_export_mwh": 73021.97999999992,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-04",
+    "total_import_mwh": 37624.37500000002,
+    "total_export_mwh": 155891.26000000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-10",
+    "total_import_mwh": 130629.39043875034,
+    "total_export_mwh": 57862.56827425001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-12",
+    "total_import_mwh": 214451.62377675003,
+    "total_export_mwh": 46040.08344274994,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-01",
+    "total_import_mwh": 224338.02999999977,
+    "total_export_mwh": 394115.27999999863,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-02",
+    "total_import_mwh": 147658.5625000002,
+    "total_export_mwh": 399849.19999999885,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-08",
+    "total_import_mwh": 78095.76500000004,
+    "total_export_mwh": 692083.7600000064,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2024-09",
+    "total_import_mwh": 76218.22249999993,
+    "total_export_mwh": 500889.25000000326,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-02",
+    "total_import_mwh": 2601.9024999999997,
+    "total_export_mwh": 808973.4399999963,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-03",
+    "total_import_mwh": 32932.10999999999,
+    "total_export_mwh": 589037.3449999972,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-04",
+    "total_import_mwh": 91914.3625,
+    "total_export_mwh": 573375.9850000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-08",
+    "total_import_mwh": 114127.18250000005,
+    "total_export_mwh": 527367.159999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DE-LU",
+    "month": "2025-12",
+    "total_import_mwh": 3274.13525,
+    "total_export_mwh": 839575.3199999994,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-03",
+    "total_import_mwh": 911.2199999999998,
+    "total_export_mwh": 25907.227500000008,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-04",
+    "total_import_mwh": 6281.057499999981,
+    "total_export_mwh": 4085.5225,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-06",
+    "total_import_mwh": 210.24999999999753,
+    "total_export_mwh": 3581.854999999994,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-07",
+    "total_import_mwh": 261.22249999999497,
+    "total_export_mwh": 11877.677500000036,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-08",
+    "total_import_mwh": 821.6899999999998,
+    "total_export_mwh": 33024.34750000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-09",
+    "total_import_mwh": 1107.5475,
+    "total_export_mwh": 39944.84250000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-10",
+    "total_import_mwh": 2894.4000000000065,
+    "total_export_mwh": 17771.964999999964,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-11",
+    "total_import_mwh": 3149.422500000003,
+    "total_export_mwh": 29704.96250000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2024-12",
+    "total_import_mwh": 5998.022500000001,
+    "total_export_mwh": 23546.21250000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-01",
+    "total_import_mwh": 4077.1649999999995,
+    "total_export_mwh": 24139.86000000005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-02",
+    "total_import_mwh": 1041.6700000000003,
+    "total_export_mwh": 28076.84000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-03",
+    "total_import_mwh": 5086.2824999999975,
+    "total_export_mwh": 13157.654999999984,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-05",
+    "total_import_mwh": 5048.100000000012,
+    "total_export_mwh": 8751.592500000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-06",
+    "total_import_mwh": 196.56999999999945,
+    "total_export_mwh": 15870.184999999903,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-07",
+    "total_import_mwh": 169.1925,
+    "total_export_mwh": 35814.9449999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-09",
+    "total_import_mwh": 485.94249999999954,
+    "total_export_mwh": 30426.80249999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-10",
+    "total_import_mwh": 2016.7871960000004,
+    "total_export_mwh": 35360.673454250034,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-11",
+    "total_import_mwh": 1166.4327355,
+    "total_export_mwh": 31603.067564500005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO4-FI",
+    "month": "2025-12",
+    "total_import_mwh": 5279.800508500001,
+    "total_export_mwh": 22510.684877749976,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-02",
+    "total_import_mwh": 271290.72000000015,
+    "total_export_mwh": 39066.42,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-05",
+    "total_import_mwh": 261157.67500000008,
+    "total_export_mwh": 41123.200000000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-07",
+    "total_import_mwh": 327196.7824999999,
+    "total_export_mwh": 16445.820000000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-09",
+    "total_import_mwh": 278768.4975000001,
+    "total_export_mwh": 11478.499999999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2024-10",
+    "total_import_mwh": 265697.97,
+    "total_export_mwh": 24672.300000000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-01",
+    "total_import_mwh": 107701.43250000016,
+    "total_export_mwh": 111120.28999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-02",
+    "total_import_mwh": 90468.185,
+    "total_export_mwh": 63395.75999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-05",
+    "total_import_mwh": 82589.09000000003,
+    "total_export_mwh": 102862.21,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-06",
+    "total_import_mwh": 74661.40249999998,
+    "total_export_mwh": 122282.70000000006,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-07",
+    "total_import_mwh": 114216.96499999998,
+    "total_export_mwh": 40912.99000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-08",
+    "total_import_mwh": 97467.22499999993,
+    "total_export_mwh": 129770.33000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-09",
+    "total_import_mwh": 127106.52749999972,
+    "total_export_mwh": 85683.77,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO3-SE2",
+    "month": "2025-11",
+    "total_import_mwh": 103708.05595725014,
+    "total_export_mwh": 101895.8703744999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-01",
+    "total_import_mwh": 500478.8599999999,
+    "total_export_mwh": 210450.32000000012,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-04",
+    "total_import_mwh": 343770.38000000047,
+    "total_export_mwh": 160878.76000000007,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-05",
+    "total_import_mwh": 354079.95249999984,
+    "total_export_mwh": 95656.68000000007,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-06",
+    "total_import_mwh": 332331.1474999996,
+    "total_export_mwh": 70712.05999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-08",
+    "total_import_mwh": 457526.5225000001,
+    "total_export_mwh": 28022.450000000008,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-12",
+    "total_import_mwh": 583243.0325000002,
+    "total_export_mwh": 176925.59000000008,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-01",
+    "total_import_mwh": 428166.62249999976,
+    "total_export_mwh": 210883.14999999982,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-02",
+    "total_import_mwh": 273038.7800000001,
+    "total_export_mwh": 240851.78999999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-04",
+    "total_import_mwh": 353889.57499999995,
+    "total_export_mwh": 203504.17,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-06",
+    "total_import_mwh": 473195.04500000045,
+    "total_export_mwh": 94331.08,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-08",
+    "total_import_mwh": 449720.2375000002,
+    "total_export_mwh": 93853.75000000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-11",
+    "total_import_mwh": 556204.8743267502,
+    "total_export_mwh": 168529.50167800006,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-01",
+    "total_import_mwh": 408417.26999999996,
+    "total_export_mwh": 318404.22,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-02",
+    "total_import_mwh": 241696.57000000004,
+    "total_export_mwh": 431507.54999999976,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-03",
+    "total_import_mwh": 203770.44000000006,
+    "total_export_mwh": 618848.21,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-05",
+    "total_import_mwh": 94984.61500000002,
+    "total_export_mwh": 731904.1500000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-07",
+    "total_import_mwh": 93027.71499999997,
+    "total_export_mwh": 842494.9500000007,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-12",
+    "total_import_mwh": 75028.93,
+    "total_export_mwh": 770074.1800000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-02",
+    "total_import_mwh": 6229.919999999998,
+    "total_export_mwh": 788280.2149999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-03",
+    "total_import_mwh": 50419.39750000001,
+    "total_export_mwh": 892163.1350000005,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-04",
+    "total_import_mwh": 30043.02999999999,
+    "total_export_mwh": 698729.2175000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-06",
+    "total_import_mwh": 198775.98750000013,
+    "total_export_mwh": 450660.465,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-07",
+    "total_import_mwh": 30439.28,
+    "total_export_mwh": 790058.8175000012,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-08",
+    "total_import_mwh": 95031.04499999985,
+    "total_export_mwh": 568176.2199999993,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-10",
+    "total_import_mwh": 162351.59940899975,
+    "total_export_mwh": 698536.1300000004,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-11",
+    "total_import_mwh": 104188.67523349989,
+    "total_export_mwh": 656586.1000000013,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-12",
+    "total_import_mwh": 106024.15293099998,
+    "total_export_mwh": 749697.0675000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-02",
+    "total_import_mwh": 493427.2100000003,
+    "total_export_mwh": 198620.32999999993,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-03",
+    "total_import_mwh": 485424.60999999964,
+    "total_export_mwh": 255889.27999999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-07",
+    "total_import_mwh": 225121.33749999985,
+    "total_export_mwh": 104352.40000000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-09",
+    "total_import_mwh": 346806.84249999974,
+    "total_export_mwh": 97921.40999999995,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-10",
+    "total_import_mwh": 685959.6649999997,
+    "total_export_mwh": 25561.31,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2024-11",
+    "total_import_mwh": 581206.7625000004,
+    "total_export_mwh": 80039.09999999996,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-03",
+    "total_import_mwh": 591305.1424999997,
+    "total_export_mwh": 161577.55,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-05",
+    "total_import_mwh": 565298.1275000001,
+    "total_export_mwh": 127777.22999999992,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-07",
+    "total_import_mwh": 545723.4825000002,
+    "total_export_mwh": 58289.32,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-09",
+    "total_import_mwh": 502422.68500000046,
+    "total_export_mwh": 44779.49250000001,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-10",
+    "total_import_mwh": 689756.7824602509,
+    "total_export_mwh": 22832.406989999985,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO1-SE3",
+    "month": "2025-12",
+    "total_import_mwh": 711832.6929637507,
+    "total_export_mwh": 196623.39205849989,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-04",
+    "total_import_mwh": 227644.99749999997,
+    "total_export_mwh": 339723.3700000002,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-06",
+    "total_import_mwh": 69911.5625,
+    "total_export_mwh": 782740.2199999999,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-08",
+    "total_import_mwh": 70866.64249999997,
+    "total_export_mwh": 861316.9299999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-09",
+    "total_import_mwh": 46034.17749999999,
+    "total_export_mwh": 848813.9600000003,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-10",
+    "total_import_mwh": 64001.89999999999,
+    "total_export_mwh": 791904.0599999997,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2024-11",
+    "total_import_mwh": 57494.57500000004,
+    "total_export_mwh": 781399.0100000009,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-01",
+    "total_import_mwh": 93373.8675,
+    "total_export_mwh": 760432.6099999998,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-05",
+    "total_import_mwh": 231051.83749999956,
+    "total_export_mwh": 426484.35749999963,
+    "is_test_data": false
+  },
+  {
+    "connection": "NO2-DK1",
+    "month": "2025-09",
+    "total_import_mwh": 45986.23749999994,
+    "total_export_mwh": 677526.3599999988,
+    "is_test_data": false
+  }
+]
