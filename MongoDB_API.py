@@ -1,3 +1,4 @@
+
 import os
 import pandas as pd
 
@@ -5,10 +6,13 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 
 
-def get_entsoe_monthly_data():
+# ============================================================
+# 1. GENERAL FUNCTION FOR READING MONGODB DATA
+# ============================================================
+
+def get_mongodb_data(collection_name):
     """
-    Retrieve real monthly ENTSO-E electricity transfer data
-    from MongoDB Atlas.
+    Retrieve real ENTSO-E data from a MongoDB collection.
     """
 
     load_dotenv()
@@ -16,7 +20,7 @@ def get_entsoe_monthly_data():
     uri = os.getenv("MONGODB_URI")
 
     if not uri:
-        raise ValueError("MONGODB_URI is missing in .env")
+        raise ValueError("MONGODB_URI is missing")
 
     client = MongoClient(
         uri,
@@ -25,7 +29,7 @@ def get_entsoe_monthly_data():
 
     try:
         db = client["IND320"]
-        collection = db["entsoe_monthly"]
+        collection = db[collection_name]
 
         documents = list(
             collection.find(
@@ -40,39 +44,56 @@ def get_entsoe_monthly_data():
         client.close()
 
 
+# ============================================================
+# 2. RETRIEVE MONTHLY ENTSO-E DATA
+# ============================================================
+
+def get_entsoe_monthly_data():
+    """
+    Retrieve monthly electricity import and export data.
+    """
+
+    return get_mongodb_data("entsoe_monthly")
+
+
+# ============================================================
+# 3. RETRIEVE DAILY ENTSO-E DATA
+# ============================================================
+
+def get_entsoe_daily_data():
+    """
+    Retrieve daily electricity import and export data.
+    """
+
+    return get_mongodb_data("entsoe_daily")
+
+
+# ============================================================
+# 4. TEST FUNCTIONS
+# ============================================================
+
 if __name__ == "__main__":
-    df = get_entsoe_monthly_data()
 
-    print(df.head())
-    print("Number of rows:", len(df))
-    print("Connections:", df["connection"].nunique())
-    print("Months:", df["month"].nunique())
+    # Test monthly data
+    df_monthly = get_entsoe_monthly_data()
 
-    # Check missing values
-print("\nMissing values:")
-print(df.isna().sum())
+    print("\n=== MONTHLY DATA ===")
+    print(df_monthly.head())
+    print("Number of rows:", len(df_monthly))
 
-# Check negative electricity values
-print("\nNegative import values:")
-print((df["total_import_mwh"] < 0).sum())
+    # Test daily data
+    df_daily = get_entsoe_daily_data()
 
-print("\nNegative export values:")
-print((df["total_export_mwh"] < 0).sum())
+    print("\n=== DAILY DATA ===")
+    print(df_daily.head())
+    print("Number of rows:", len(df_daily))
 
-# Check number of months per connection
-print("\nMonths per connection:")
-print(df.groupby("connection")["month"].nunique())
-
-# Check duplicate connection-month combinations
-duplicates = df.duplicated(
-    subset=["connection", "month"],
-    keep=False
-)
-
-print("\nDuplicate connection-month combinations:")
-print(duplicates.sum())
-
-if duplicates.any():
-    print(df[duplicates].sort_values(["connection", "month"]))
-else:
-    print("No duplicates found.")
+    if not df_daily.empty:
+        print(
+            "Connections:",
+            df_daily["connection"].nunique()
+        )
+        print(
+            "Dates:",
+            df_daily["date"].nunique()
+        )

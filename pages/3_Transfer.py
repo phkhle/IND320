@@ -3,7 +3,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from MongoDB_API import get_entsoe_monthly_data
+from MongoDB_API import (
+    get_entsoe_monthly_data,
+    get_entsoe_daily_data,
+)
 
 
 # ============================================================
@@ -19,97 +22,133 @@ st.write(
 
 
 # ============================================================
-# 2. FETCH REAL DATA FROM MONGODB
+# 2. FETCH DATA FROM MONGODB
 # ============================================================
 
 @st.cache_data(ttl=3600)
-def load_data():
-    """
-    Load real monthly ENTSO-E electricity transfer data
-    from MongoDB Atlas.
-    """
+def load_monthly_data():
+    """Load monthly ENTSO-E data from MongoDB Atlas."""
     return get_entsoe_monthly_data()
 
 
-df = load_data()
+@st.cache_data(ttl=3600)
+def load_daily_data():
+    """Load daily ENTSO-E data from MongoDB Atlas."""
+    return get_entsoe_daily_data()
 
-if df.empty:
-    st.warning("No data available in MongoDB.")
+
+df_monthly = load_monthly_data()
+df_daily = load_daily_data()
+
+if df_monthly.empty or df_daily.empty:
+    st.warning("Monthly or daily ENTSO-E data is missing in MongoDB.")
     st.stop()
 
 
-# Convert month to datetime and extract year
-df["month"] = pd.to_datetime(df["month"], format="%Y-%m")
-df["year"] = df["month"].dt.year
-
-# Ensure numeric columns
-df["total_import_mwh"] = pd.to_numeric(
-    df["total_import_mwh"], errors="coerce"
-)
-
-df["total_export_mwh"] = pd.to_numeric(
-    df["total_export_mwh"], errors="coerce"
-)
-
-
 # ============================================================
-# 3. SELECT CONNECTION AND YEAR
+# 3. PREPARE DATA
 # ============================================================
 
-connection = st.selectbox(
-    "Select connection",
-    options=sorted(df["connection"].unique())
+df_monthly["month"] = pd.to_datetime(
+    df_monthly["month"], format="%Y-%m"
 )
 
-# Available years for selected connection
-connection_df = df[df["connection"] == connection]
-
-available_years = sorted(
-    connection_df["year"].unique(),
-    reverse=True
+df_daily["date"] = pd.to_datetime(
+    df_daily["date"], format="%Y-%m-%d"
 )
 
-selected_year = st.radio(
-    "Select year",
-    options=available_years,
-    horizontal=True
-)
+df_monthly["year"] = df_monthly["month"].dt.year
+df_daily["year"] = df_daily["date"].dt.year
+df_daily["month_number"] = df_daily["date"].dt.month
 
-# Filter data
-df_filtered = df[
-    (df["connection"] == connection) &
-    (df["year"] == selected_year)
-].copy()
-
-df_filtered = df_filtered.sort_values("month")
-
-
-# ============================================================
-# 4. CALCULATE TOTAL IMPORT AND EXPORT
-# ============================================================
-
-total_import = df_filtered["total_import_mwh"].sum()
-total_export = df_filtered["total_export_mwh"].sum()
-
-net_import = total_import - total_export
-
-
-# Display summary metrics
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric(
-        "Total Import (MWh)",
-        f"{total_import:,.0f}"
+for df in [df_monthly, df_daily]:
+    df["total_import_mwh"] = pd.to_numeric(
+        df["total_import_mwh"], errors="coerce"
+    )
+    df["total_export_mwh"] = pd.to_numeric(
+        df["total_export_mwh"], errors="coerce"
     )
 
-with col2:
-    st.metric(
-        "Total Export (MWh)",
-        f"{total_export:,.0f}"
+
+# ============================================================
+# 4. CREATE TWO-COLUMN LAYOUT
+# ============================================================
+
+left_col, right_col = st.columns(2, gap="large")
+
+
+# ============================================================
+# 5. LEFT COLUMN - ANNUAL IMPORT AND EXPORT
+# ============================================================
+
+with left_col:
+
+    st.subheader("Annual Import and Export")
+
+    connection = st.radio(
+        "Select connection",
+        options=sorted(df_monthly["connection"].unique())
     )
 
-with col3:
+    connection_df = df_monthly[
+        df_monthly["connection"] == connection
+    ]
+
+    available_years = sorted(
+        connection_df["year"].unique(),
+        reverse=True
+    )
+
+    selected_year = st.selectbox(
+        "Select year",
+        options=available_years
+    )
+
+    annual_df = connection_df[
+        connection_df["year"] == selected_year
+    ].copy()
+
+    total_import = annual_df["total_import_mwh"].sum()
+    total_export = annual_df["total_export_mwh"].sum()
+    net_import = total_import - total_export
+
+    pie_df = pd.DataFrame({
+        "Direction": ["Import", "Export"],
+        "MWh": [total_import, total_export]
+    })
+
+    if pie_df["MWh"].sum() > 0:
+
+        fig_pie = px.pie(
+            pie_df,
+            names="Direction",
+            values="MWh",
+            hole=0.3,
+            title=f"{connection} – {selected_year}"
+        )
+
+        st.plotly_chart(
+            fig_pie,
+            use_container_width=True
+        )
+
+    else:
+        st.info("No electricity transfers for this period.")
+
+    metric_col1, metric_col2 = st.columns(2)
+
+    with metric_col1:
+        st.metric(
+            "Import (MWh)",
+            f"{total_import:,.0f}"
+        )
+
+    with metric_col2:
+        st.metric(
+            "Export (MWh)",
+            f"{total_export:,.0f}"
+        )
+
     st.metric(
         "Net Import (MWh)",
         f"{net_import:,.0f}"
@@ -117,135 +156,127 @@ with col3:
 
 
 # ============================================================
-# 5. PIE CHART - IMPORT VS EXPORT
+# 6. RIGHT COLUMN - DAILY ELECTRICITY TRANSFERS
 # ============================================================
 
-st.subheader(f"Import vs Export – {connection} ({selected_year})")
+with right_col:
 
-pie_df = pd.DataFrame({
-    "Direction": ["Import", "Export"],
-    "MWh": [total_import, total_export]
-})
+    st.subheader("Daily Electricity Transfers")
 
-if pie_df["MWh"].sum() > 0:
+    daily_filtered = df_daily[
+        (df_daily["connection"] == connection) &
+        (df_daily["year"] == selected_year)
+    ].copy()
 
-    fig_pie = px.pie(
-        pie_df,
-        names="Direction",
-        values="MWh",
-        title=f"Electricity Transfers – {connection} ({selected_year})",
-        hole=0.3
+    month_names = {
+        1: "Jan", 2: "Feb", 3: "Mar",
+        4: "Apr", 5: "May", 6: "Jun",
+        7: "Jul", 8: "Aug", 9: "Sep",
+        10: "Oct", 11: "Nov", 12: "Dec"
+    }
+
+    available_months = sorted(
+        daily_filtered["month_number"].unique()
     )
 
-    st.plotly_chart(
-        fig_pie,
-        use_container_width=True
+    month_options = [
+        month_names[month] for month in available_months
+    ]
+
+    selected_month_labels = st.pills(
+        "Select months",
+        options=month_options,
+        selection_mode="multi",
+        default=["Jan"] if "Jan" in month_options else []
     )
 
-else:
-    st.info("No electricity transfers available for this period.")
+    selected_month_numbers = [
+        month for month, name in month_names.items()
+        if name in selected_month_labels
+    ]
 
+    plot_daily = daily_filtered[
+        daily_filtered["month_number"].isin(
+            selected_month_numbers
+        )
+    ].copy()
 
-# ============================================================
-# 6. MONTHLY ELECTRICITY TRANSFERS
-# ============================================================
+    if not plot_daily.empty:
 
-st.subheader("Monthly Import and Export")
+        plot_daily = plot_daily.sort_values("date")
 
-# Create readable month labels
-df_filtered["month_label"] = df_filtered["month"].dt.strftime("%Y-%m")
+        plot_df = plot_daily.melt(
+            id_vars=["date"],
+            value_vars=[
+                "total_import_mwh",
+                "total_export_mwh"
+            ],
+            var_name="Direction",
+            value_name="MWh"
+        )
 
-available_months = df_filtered["month_label"].tolist()
+        plot_df["Direction"] = plot_df["Direction"].replace({
+            "total_import_mwh": "Import",
+            "total_export_mwh": "Export"
+        })
 
-selected_months = st.multiselect(
-    "Select months",
-    options=available_months,
-    default=available_months
-)
+        fig_line = px.line(
+            plot_df,
+            x="date",
+            y="MWh",
+            color="Direction",
+            title=f"{connection} – Daily Transfers ({selected_year})",
+            labels={
+                "date": "Date",
+                "MWh": "Electricity (MWh)"
+            }
+        )
 
-monthly_filtered = df_filtered[
-    df_filtered["month_label"].isin(selected_months)
-].copy()
+        fig_line.update_layout(
+            hovermode="x unified",
+            xaxis_title="Date",
+            yaxis_title="Electricity (MWh)"
+        )
 
+        st.plotly_chart(
+            fig_line,
+            use_container_width=True
+        )
 
-if not monthly_filtered.empty:
-
-    monthly_filtered = monthly_filtered.sort_values("month")
-
-    # Convert wide data to long format for Plotly
-    plot_df = monthly_filtered.melt(
-        id_vars=["month", "month_label"],
-        value_vars=[
-            "total_import_mwh",
-            "total_export_mwh"
-        ],
-        var_name="Direction",
-        value_name="MWh"
-    )
-
-    plot_df["Direction"] = plot_df["Direction"].replace({
-        "total_import_mwh": "Import",
-        "total_export_mwh": "Export"
-    })
-
-    fig_line = px.line(
-        plot_df,
-        x="month",
-        y="MWh",
-        color="Direction",
-        markers=True,
-        title=f"Monthly Electricity Transfers – {connection} ({selected_year})",
-        labels={
-            "month": "Month",
-            "MWh": "Electricity (MWh)"
-        }
-    )
-
-    fig_line.update_layout(
-        xaxis=dict(
-            tickformat="%b %Y"
-        ),
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(
-        fig_line,
-        use_container_width=True
-    )
-
-else:
-    st.info("Please select at least one month.")
+    else:
+        st.info("Select at least one month to display daily data.")
 
 
 # ============================================================
-# 7. DATA SOURCE AND RAW DATA
+# 7. DATA SOURCE AND OBSERVATIONS
 # ============================================================
 
-with st.expander("Data source and monthly observations"):
+with st.expander("Data source and observations"):
 
     st.write("**Source:** ENTSO-E Transparency Platform")
-    st.write("**Database:** MongoDB Atlas – IND320.entsoe_monthly")
-    st.write("**Data type:** Real electricity transfer observations")
+    st.write("**Storage:** Apache Cassandra and MongoDB Atlas")
+    st.write("**Processing:** Apache Spark")
+    st.write("**Collections:** IND320.entsoe_monthly, IND320.entsoe_daily")
     st.write("**Period:** January 2024 – December 2025")
     st.write("**Unit:** MWh")
 
-    display_df = df_filtered[
-        [
-            "connection",
-            "month_label",
-            "total_import_mwh",
-            "total_export_mwh"
-        ]
-    ].copy()
+    st.write(
+        "Electricity transfer observations are aggregated into "
+        "monthly and daily totals. Daily dates are based on "
+        "the Europe/Oslo time zone."
+    )
 
-    display_df = display_df.rename(columns={
-        "month_label": "Month",
-        "total_import_mwh": "Import (MWh)",
-        "total_export_mwh": "Export (MWh)"
-    })
+    st.subheader("Monthly observations")
 
     st.dataframe(
-        display_df,
+        annual_df[
+            [
+                "connection",
+                "month",
+                "total_import_mwh",
+                "total_export_mwh"
+            ]
+        ],
         use_container_width=True,
         hide_index=True
     )
