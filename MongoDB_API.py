@@ -20,8 +20,10 @@ def get_mongodb_data(collection_name):
     uri = os.getenv("MONGODB_URI")
 
     if not uri:
-        raise ValueError("MONGODB_URI is missing")
+        import streamlit as st
+        uri = st.secrets.get("MONGODB_URI")
 
+   
     client = MongoClient(
         uri,
         serverSelectionTimeoutMS=10000
