@@ -1,2 +1,4 @@
-# gitignore will ignore the .enf file
+# gitignore will ignore these files
+.venv/
 .env
+__pycache__/
