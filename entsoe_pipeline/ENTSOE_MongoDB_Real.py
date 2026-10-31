@@ -15,7 +15,7 @@ if not mongo_uri:
 
 
 # Read the exported JSON file
-with open("entsoe_monthly.json", "r", encoding="utf-8") as file:
+with open("data/entsoe/entsoe_monthly.json", "r", encoding="utf-8") as file:
     documents = json.load(file)
 
 if len(documents) != 216:
