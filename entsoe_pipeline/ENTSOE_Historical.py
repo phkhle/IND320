@@ -2,7 +2,7 @@
 import pandas as pd
 from pathlib import Path
 
-from ENTSOE_API import get_entsoe_data
+from entsoe_pipeline.ENTSOE_API import get_entsoe_data
 
 # This file fetch the entire historical ENTSO-E data for Norway in 2 years of monthly chunks and saves them as CSV files in the data/entsoe directory.
 

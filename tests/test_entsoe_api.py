@@ -1,4 +1,4 @@
-from ENTSOE_API import get_entsoe_data
+from entsoe_pipeline.ENTSOE_API import get_entsoe_data
 
 # Retrieve real ENTSO-E data
 # Test with one month of data in January 2025
