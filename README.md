@@ -58,22 +58,6 @@ The **Transfer** page allows users to:
 - Compare annual imports and exports using a pie chart.
 - Explore daily electricity flows for selected months using an interactive line chart.
 
-## Project Structure
-
-```text
-IND320/
-├── entsoe_pipeline/     # ENTSO-E API, Spark, Cassandra and MongoDB scripts
-├── data/entsoe/          # Historical CSV and aggregated JSON files
-├── pages/               # Streamlit dashboard pages
-├── tests/               # Test scripts
-├── MongoDB_API.py       # Retrieve data from MongoDB Atlas
-├── NVE_API.py           # Retrieve data from NVE
-├── streamlit_app.py     # Main Streamlit application
-├── assignment1.ipynb
-├── assignment2.ipynb
-└── requirements.txt
-```
-
 ## Run Locally
 
 ### 1. Clone the Repository
@@ -116,15 +100,3 @@ streamlit run streamlit_app.py
 ```
 
 Rebuilding the historical data pipeline additionally requires ENTSO-E API access and a configured Spark/Cassandra environment.
-
-## Deployment
-
-**Streamlit App:** https://ind320-project2.streamlit.app/
-
-**GitHub Repository:** https://github.com/phkhle/ind320/tree/project2
-
----
-
-**Course:** IND320  
-**Institution:** Norwegian University of Life Sciences (NMBU)  
-**Semester:** Autumn 2026
