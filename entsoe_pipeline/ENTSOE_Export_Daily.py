@@ -77,8 +77,7 @@ try:
             "connection": row["connection"],
             "date": row["date"],
             "total_import_mwh": float(row["total_import_mwh"]),
-            "total_export_mwh": float(row["total_export_mwh"]),
-            "is_test_data": False
+            "total_export_mwh": float(row["total_export_mwh"])
         }
         for row in df_daily.collect()
     ]

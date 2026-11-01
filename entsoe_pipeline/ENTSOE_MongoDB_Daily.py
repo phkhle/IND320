@@ -30,7 +30,7 @@ try:
     # 2. LOAD DAILY JSON DATA
     # ========================================================
 
-    with open("entsoe_daily.json", "r", encoding="utf-8") as file:
+    with open("data/entsoe/entsoe_daily.json", "r", encoding="utf-8") as file:
         documents = json.load(file)
 
     print(f"Loaded {len(documents)} daily documents.")

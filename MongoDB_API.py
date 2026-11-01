@@ -40,10 +40,10 @@ def get_mongodb_data(collection_name):
 
         documents = list(
             collection.find(
-                {"is_test_data": False},
-                {"_id": 0}
-            )
+            {},
+            {"_id": 0, "is_test_data": 0}
         )
+    )
 
         return pd.DataFrame(documents)
 
