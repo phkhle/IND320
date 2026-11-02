@@ -8,3 +8,5 @@ requests
 pymongo
 python-dotenv
 plotly
+# assignment 3
+geopandas
