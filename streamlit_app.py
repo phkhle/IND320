@@ -115,6 +115,49 @@ with col3:
             icon="⚡"
         )
 
+
+# ============================================================
+# PROJECT 3 - ANALYSIS PAGES
+# ============================================================
+
+st.divider()
+
+st.header("Advanced Analysis – Project 3")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    with st.container(border=True):
+        st.subheader("STL & Spectrogram")
+
+        st.write(
+            "Analyze reservoir filling levels using "
+            "STL decomposition and spectrograms."
+        )
+
+        st.page_link(
+            "pages/4_STL_Spectrogram.py",
+            label="Open STL & Spectrogram",
+            icon="📊"
+        )
+
+with col2:
+    with st.container(border=True):
+        st.subheader("SPC & LOF")
+
+        st.write(
+            "Detect anomalies in precipitation and "
+            "temperature using SPC and Local Outlier Factor."
+        )
+
+        st.page_link(
+            "pages/5_SPC_LOF.py",
+            label="Open SPC & LOF",
+            icon="🌦️"
+        )
+
+
+
 # ============================================================
 # FOOTER
 # ============================================================
