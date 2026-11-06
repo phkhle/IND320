@@ -11,3 +11,4 @@ plotly
 # assignment 3
 geopandas
 pyarrow
+statsmodels
