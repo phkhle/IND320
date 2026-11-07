@@ -1,6 +1,7 @@
 
 import streamlit as st
 import pandas as pd
+from area_selector import select_area
 
 # Import function from NVE_API.py
 from NVE_API import get_nve_data
@@ -57,11 +58,7 @@ df["month"] = df["dato_Id"].dt.to_period("M")
 # 5. SELECT AREA TYPE
 # ============================================================
 
-selected_area = st.radio(
-    "Select area type:",
-    options=["EL", "NO", "VASS"],
-    horizontal=True
-)
+selected_area, selected_number = select_area(df)
 
 
 # ============================================================
@@ -94,6 +91,7 @@ start_month, end_month = st.select_slider(
 
 filtered_df = df[
     (df["omrType"] == selected_area)
+    & (df["omrnr"] == selected_number)
     & (df["month"] >= start_month)
     & (df["month"] <= end_month)
 ].copy()

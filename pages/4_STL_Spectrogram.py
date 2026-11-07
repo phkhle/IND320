@@ -1,7 +1,7 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from area_selector import select_area
 
 from NVE_API import get_nve_data
 from analysis import (
@@ -36,55 +36,11 @@ df["dato_Id"] = pd.to_datetime(df["dato_Id"])
 
 
 # ============================================================
-# 3. SELECT AREA
+# 3. SHARED AREA SELECTION
 # ============================================================
 
-selected_area = st.radio(
-    "Select area type:",
-    options=["EL", "NO", "VASS"],
-    horizontal=True
-)
+selected_area, selected_number = select_area(df)
 
-area_numbers = sorted(
-    df.loc[
-        df["omrType"] == selected_area,
-        "omrnr"
-    ].unique()
-)
-
-# ============================================================
-# SHARED AREA SELECTION
-# ============================================================
-
-if selected_area == "EL":
-
-    # Initialize persistent selection
-    if st.session_state.get("selected_el_area", 3) not in area_numbers:
-        st.session_state["selected_el_area"] = 3
-
-    # Restore previous selection
-    selected_index = area_numbers.index(
-        st.session_state.get("selected_el_area", 3)
-    )
-
-    selected_number = st.selectbox(
-        "Select area number:",
-        options=area_numbers,
-        index=selected_index,
-        format_func=lambda x: f"NO{x}",
-        key="el_area_widget"
-    )
-
-    # Save selection separately from widget state
-    st.session_state["selected_el_area"] = selected_number
-
-else:
-
-    selected_number = st.selectbox(
-        "Select area number:",
-        options=area_numbers,
-        format_func=lambda x: f"Area {x}"
-    )
 # ============================================================
 # 4. FILTER WEEKLY DATA
 # ============================================================
