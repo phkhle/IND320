@@ -38,8 +38,10 @@ def dct_highpass_filter(values, cutoff=30):
 # PPlot precipitation with SPC limits and outliers
 def plot_precipitation_spc(
     df,
+    region = "NO3",
     cutoff=30,
-    n_std=3
+    n_std=3,
+  
 ):
     """
     Detect precipitation outliers using DCT and robust SPC.
@@ -113,7 +115,7 @@ def plot_precipitation_spc(
     )
 
     ax.set(
-        title="Precipitation SPC Analysis – NO3 (2024)",
+        title= f"Precipitation SPC Analysis – {region} (2024)",
         xlabel="Date",
         ylabel="Average precipitation (mm/hour)"
     )
@@ -142,8 +144,10 @@ def plot_precipitation_spc(
 # Plot temperature with LOF anomalies
 def plot_temperature_lof(
     df,
+    region = 'NO3',
     contamination=0.01,
-    n_neighbors=20
+    n_neighbors=20,
+    
 ):
     """
     Detect temperature anomalies using Local Outlier Factor.
@@ -196,7 +200,7 @@ def plot_temperature_lof(
     )
 
     ax.set(
-        title="Temperature Anomaly Detection – NO3 (2024)",
+        title=f"Temperature Anomaly Detection – {region} (2024)",
         xlabel="Date",
         ylabel="Average temperature (°C)"
     )

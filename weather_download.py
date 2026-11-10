@@ -2,7 +2,7 @@
 import pandas as pd
 from pathlib import Path
 import requests
-
+import time
 
 
 def get_era5_weather(latitude, longitude, start_date, end_date):
@@ -94,15 +94,27 @@ def download_and_save_region_weather(
     region,
     start_date,
     end_date,
-    locations=weather_locations,
+    locations=None,
     batch_size=10,
     n_locations=None,
-    output_dir="../data/weather"
+    output_dir=None
 ):
     """
     Download ERA5 weather data in batches.
     Save each completed batch and skip it on future runs.
     """
+
+    project_root = Path(__file__).resolve().parent
+
+    if locations is None:
+        locations = pd.read_csv(
+            project_root / "data" / "geography" / "weather_locations.csv"
+        )
+
+    if output_dir is None:
+        output_dir = project_root / "data" / "weather"
+
+
 
     points = locations.loc[
         locations["region"] == region
@@ -213,5 +225,53 @@ def download_and_save_region_weather(
         time.sleep(1)
 
     print("Download run finished.")
+    
+        # Combine downloaded batches
+    print("Starting aggregation...")
+
+        # Combine downloaded batches
+    batch_files = []
+
+    for start in range(0, len(points), batch_size):
+        batch = points.iloc[start:start + batch_size]
+
+        first_id = batch["point_id"].iloc[0]
+        last_id = batch["point_id"].iloc[-1]
+
+        filename = (
+            f"{region}_{start_date}_{end_date}_"
+            f"{first_id}_{last_id}.parquet"
+        )
+
+        batch_files.append(output_path / filename)
+
+    df = pd.concat(
+        [pd.read_parquet(file) for file in batch_files],
+        ignore_index=True
+    )
+
+    # Calculate hourly spatial averages
+    df_hourly = (
+    df.groupby("time", as_index=False)
+    .agg(
+        temperature_mean=("temperature_2m", "mean"),
+        precipitation_mean=("precipitation", "mean"),
+        n_locations=("point_id", "nunique")
+    )
+)
+
+    # Save aggregated weather data
+    final_path = (
+        project_root
+        / "data"
+        / "weather"
+        / f"{region}_hourly_mean_2024.parquet"
+    )
+
+    df_hourly.to_parquet(final_path, index=False)
+
+    print(f"Aggregated weather data saved: {final_path}")
+
+    return final_path
 
 

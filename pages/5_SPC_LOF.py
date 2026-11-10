@@ -14,6 +14,10 @@ from NVE_API import get_nve_data
 from area_selector import select_area
 from weather_download import download_and_save_region_weather
 
+import weather_download
+
+st.write("Weather module:", weather_download.__file__)
+
 # ============================================================
 # 1. PAGE TITLE
 # ============================================================
@@ -119,9 +123,7 @@ else:
                     n_locations=10
                 )
 
-                st.success(
-                    f"Weather data saved: {output_path.name}"
-                )
+                st.success("Weather download completed.")
 
                 st.rerun()
 
