@@ -82,18 +82,32 @@ selected_area, selected_number = select_area(df_nve)
 # 4. CHECK WEATHER DATA AVAILABILITY
 # ============================================================
 
+
 project_root = Path(__file__).resolve().parent.parent
 
-region = (
-    f"NO{selected_number}"
-    if selected_area == "EL"
-    else None
-)
 
+def get_weather_region(area_type, area_number):
+    """Map the selected reservoir area to a weather region."""
+
+    if area_type == "EL" and area_number in (1, 2, 3, 4, 5):
+        return f"NO{area_number}"
+
+    if area_type == "VASS":
+        return {
+            1: "Øst",
+            2: "Vest",
+            3: "Nord"
+        }.get(area_number)
+
+    return None
+
+region = get_weather_region(selected_area, selected_number)
+
+# This part was inspeired by another student's work
 if region is None:
     st.info(
-        "Weather download is currently configured "
-        "for electricity areas only."
+        "Weather data are available for electricity areas "
+        "(NO1–NO5) and precipitation areas (VASS1–VASS3)."
     )
     st.stop()
 
@@ -275,5 +289,6 @@ with st.expander("Data source"):
     st.write(
         "The hourly precipitation and temperature "
         "values represent spatial averages across "
-        "1000 sampled locations in NO3."
+        f"1000 sampled locations in {region}."
     )
+

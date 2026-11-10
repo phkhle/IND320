@@ -66,6 +66,8 @@ def select_area(df):
         options=area_numbers,
         format_func=lambda x: (
             f"NO{x}" if selected_area == "EL"
+            else f"Area {x} – { {1: 'Øst', 2: 'Vest', 3: 'Nord'}[x] }" # according to NVEs
+            if selected_area == "VASS" and x in (1, 2, 3)
             else f"Area {x}"
         ),
         key="_area_number_widget",
