@@ -116,7 +116,7 @@ else:
                     region=region,
                     start_date="2024-01-01",
                     end_date="2024-12-31",
-                    n_locations=1000
+                    n_locations=10
                 )
 
                 st.success(
