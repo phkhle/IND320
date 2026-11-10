@@ -16,7 +16,6 @@ from weather_download import download_and_save_region_weather
 
 import weather_download
 
-st.write("Weather module:", weather_download.__file__)
 
 # ============================================================
 # 1. PAGE TITLE
@@ -47,7 +46,14 @@ def load_weather_data(region):
     )
 
     df = pd.read_parquet(file_path)
+    # Standardize weather column names
+    df = df.rename(columns={
+        "precipitation": "precipitation_mean",
+        "temperature_2m": "temperature_mean"
+    })
+
     df["time"] = pd.to_datetime(df["time"], utc=True)
+
 
     return df.sort_values("time").reset_index(drop=True)
 
@@ -120,7 +126,7 @@ else:
                     region=region,
                     start_date="2024-01-01",
                     end_date="2024-12-31",
-                    n_locations=10
+                    n_locations=1000,
                 )
 
                 st.success("Weather download completed.")
@@ -136,11 +142,10 @@ weather_df = load_weather_data(region)
 
 
 
-st.success("ERA5 weather data available for NO3.")
 
 st.caption(
-    "ERA5 hourly reanalysis data for 2024, "
-    "averaged across 1000 sampled locations."
+    f"ERA5 hourly reanalysis data for 2024, "
+    f"averaged across 1000 locations in {region}."
 )
 
 
@@ -192,8 +197,10 @@ with tab1:
 
     fig, summary = plot_precipitation_spc(
         df=weather_df,
+        region = region,
         cutoff=cutoff,
-        n_std=n_std
+        n_std=n_std,
+  
     )
 
     st.pyplot(fig)
@@ -239,8 +246,10 @@ with tab2:
 
     fig, summary = plot_temperature_lof(
         df=weather_df,
+        region = region,
         contamination=contamination,
-        n_neighbors=n_neighbors
+        n_neighbors=n_neighbors,
+        
     )
 
     st.pyplot(fig)
