@@ -61,19 +61,17 @@ The weather download functionality is implemented in weather_download.py.
 
 ## Streamlit Dashboard
 
-The dashboard includes three pages:
+The dashboard includes five pages:
 
 | Page | Description |
 |------|-------------|
-| Table | Displays NVE energy data |
-| Plot | Visualizes NVE data |
-| Transfer | Visualizes ENTSO-E electricity imports and exports |
+| Reservoir DataOverview | Displays an overview of NVE resevoir data |
+| Reservoir Statistics | Visualizes reservoir filling levels across geographical areas |
+| Reservoir TimeSeriesAnalysis | Provides STL decomposition and spectrogram analysis |
+| Power Transfer | Visualizes ENTSO-E electricity imports and exports | 
+| Weather Anomalies | Detects precipitation outliers using DCT/SPC and temperature anomalies using LOF|
 
-The **Transfer** page allows users to:
 
-- Select an electricity connection and year.
-- Compare annual imports and exports using a pie chart.
-- Explore daily electricity flows for selected months using an interactive line chart.
 
 ## Run Locally
 
