@@ -11,168 +11,142 @@ st.set_page_config(
     layout="wide"
 )
 
-# ============================================================
-# HEADER
-# ============================================================
-
-st.title("⚡ IND320 Energy Dashboard")
-
-st.write(
-    """
-    An interactive dashboard for exploring Norwegian reservoir
-    statistics, electricity transfers, and weather anomalies.
-
-    Developed as part of the IND320 course at the
-    Norwegian University of Life Sciences (NMBU).
-    """
-)
-
-st.divider()
 
 # ============================================================
-# PROJECT OVERVIEW
+# HOME PAGE
 # ============================================================
 
-st.header("About the Project")
+def home_page():
 
-col1, col2, col3 = st.columns(3)
+    st.title("⚡ IND320 Energy Dashboard")
 
-with col1:
-    st.subheader("💧 Reservoir Statistics")
     st.write(
         """
-        Explore historical reservoir filling levels,
-        storage capacity, and weekly changes using
-        data from the NVE API.
+        An interactive dashboard for exploring Norwegian
+        reservoir statistics, electricity transfers,
+        weather anomalies, and forecasting.
+
+        Developed as part of the IND320 course at NMBU.
         """
     )
 
-with col2:
-    st.subheader("⚡ Electricity Transfers")
+    st.divider()
+
+    st.header("About the Project")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.subheader("💧 Reservoir Statistics")
+        st.write(
+            "Explore historical reservoir filling levels, "
+            "storage capacity, and weekly changes using NVE data."
+        )
+
+    with col2:
+        st.subheader("⚡ Electricity Transfers")
+        st.write(
+            "Analyze electricity imports and exports using "
+            "ENTSO-E data stored in MongoDB Atlas."
+        )
+
+    with col3:
+        st.subheader("🌦️ Weather Analysis")
+        st.write(
+            "Explore ERA5 weather data and detect anomalies "
+            "using SPC and Local Outlier Factor."
+        )
+
+    st.divider()
+
+    st.header("Explore the Dashboard")
+
     st.write(
-        """
-        Analyze electricity imports and exports
-        using ENTSO-E data processed with Apache Spark
-        and stored in MongoDB Atlas.
-        """
+        "Use the sidebar to navigate between "
+        "data exploration, analysis, and forecasting."
     )
 
-with col3:
-    st.subheader("🌦️ Weather Analysis")
-    st.write(
-        """
-        Explore ERA5 temperature and precipitation
-        data and detect anomalies using Statistical
-        Process Control and Local Outlier Factor.
-        """
+    # Links to existing pages
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.page_link(
+            "pages/2_Reservoir_Statistics.py",
+            label="💧 Reservoir Statistics"
+        )
+
+        st.page_link(
+            "pages/4_Power_Transfer.py",
+            label="⚡ Electricity Transfers"
+        )
+
+    with col2:
+        st.page_link(
+            "pages/3_Reservoir_TimeSeriesAnalysis.py",
+            label="📊 Time Series Analysis"
+        )
+
+        st.page_link(
+            "pages/5_Weather_Anomalies.py",
+            label="🌦️ Weather Anomalies"
+        )
+
+    st.divider()
+
+    st.caption(
+        "Data sources: NVE API, ENTSO-E Transparency Platform, "
+        "Open-Meteo ERA5 and Norges Bank | IND320 – NMBU, Autumn 2026"
     )
 
-st.divider()
 
 # ============================================================
 # NAVIGATION
 # ============================================================
 
-st.header("Explore the Dashboard")
-
-st.write("Use the sidebar or the links below to navigate between pages.")
-
-# ------------------------------------------------------------
-# 1. RESERVOIR DATA OVERVIEW
-# ------------------------------------------------------------
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    with st.container(border=True):
-        st.subheader("1. Reservoir Data Overview")
-        st.write(
-            "Browse NVE reservoir measurements and "
-            "filter data by area and period."
+pages = {
+    "Home": [
+        st.Page(
+            home_page,
+            title="Dashboard Overview",
+            icon="🏠",
+            default=True
         )
-        st.page_link(
+    ],
+
+    "Explore Data": [
+        st.Page(
             "pages/1_Reservoir_DataOverview.py",
-            label="Open Data Overview",
+            title="Reservoir Data Overview",
             icon="📋"
-        )
+        ),
 
-# ------------------------------------------------------------
-# 2. RESERVOIR STATISTICS
-# ------------------------------------------------------------
-
-with col2:
-    with st.container(border=True):
-        st.subheader("2. Reservoir Statistics")
-        st.write(
-            "Explore monthly reservoir measurements "
-            "and historical trends."
-        )
-        st.page_link(
+        st.Page(
             "pages/2_Reservoir_Statistics.py",
-            label="Open Reservoir Statistics",
-            icon="📈"
-        )
+            title="Reservoir Statistics",
+            icon="💧"
+        ),
 
-# ------------------------------------------------------------
-# 3. TIME SERIES ANALYSIS
-# ------------------------------------------------------------
-
-with col3:
-    with st.container(border=True):
-        st.subheader("3. Reservoir Time Series Analysis")
-        st.write(
-            "Analyze reservoir filling levels using "
-            "STL decomposition and spectrograms."
-        )
-        st.page_link(
-            "pages/3_Reservoir_TimeSeriesAnalysis.py",
-            label="Open Time Series Analysis",
-            icon="📊"
-        )
-
-# ------------------------------------------------------------
-# 4. ELECTRICITY TRANSFERS
-# ------------------------------------------------------------
-
-col4, col5 = st.columns(2)
-
-with col4:
-    with st.container(border=True):
-        st.subheader("4. Electricity Transfers")
-        st.write(
-            "Compare electricity imports and exports "
-            "and analyze daily transfer trends."
-        )
-        st.page_link(
+        st.Page(
             "pages/4_Power_Transfer.py",
-            label="Open Electricity Transfers",
+            title="Electricity Transfers",
             icon="⚡"
         )
+    ],
 
-# ------------------------------------------------------------
-# 5. WEATHER ANOMALY DETECTION
-# ------------------------------------------------------------
+    "Analysis": [
+        st.Page(
+            "pages/3_Reservoir_TimeSeriesAnalysis.py",
+            title="STL & Spectrogram",
+            icon="📊"
+        ),
 
-with col5:
-    with st.container(border=True):
-        st.subheader("5. Weather Anomaly Detection")
-        st.write(
-            "Detect precipitation and temperature anomalies "
-            "using DCT-based SPC and Local Outlier Factor."
-        )
-        st.page_link(
+        st.Page(
             "pages/5_Weather_Anomalies.py",
-            label="Open Weather Anomalies",
+            title="Weather Anomalies",
             icon="🌦️"
         )
+    ]
+}
 
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.divider()
-
-st.caption(
-    "Data sources: NVE API, ENTSO-E Transparency Platform "
-    "and Open-Meteo ERA5 | IND320 – NMBU, Autumn 2026"
-)
+navigation = st.navigation(pages)
+navigation.run()
