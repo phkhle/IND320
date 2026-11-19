@@ -1,10 +1,16 @@
-
-# Dependencies for IND320 Project 2 Streamlit app
+# assignment 2
 streamlit
 pandas
+numpy
+scipy
 matplotlib
 scikit-learn
 requests
 pymongo
 python-dotenv
 plotly
+# assignment 3
+geopandas
+pyarrow
+statsmodels
+shapely
