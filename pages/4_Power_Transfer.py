@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-from MongoDB_API import (
+from src.MongoDB_API import (
     get_entsoe_monthly_data,
     get_entsoe_daily_data,
 )

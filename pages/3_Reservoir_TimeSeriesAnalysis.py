@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from area_selector import select_area
+from src.area_selector import select_area
 
-from NVE_API import get_nve_data
-from analysis import (
+from src.NVE_API import get_nve_data
+from src.analysis import (
     plot_filling_stl,
     plot_filling_spectrogram
 )

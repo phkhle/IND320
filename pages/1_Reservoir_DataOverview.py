@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 from streamlit.column_config import LineChartColumn
 
-from NVE_API import get_nve_data
+from src.NVE_API import get_nve_data
 
 
 # ============================================================

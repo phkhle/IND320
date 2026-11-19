@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 
 from pathlib import Path
 
-from analysis import (
+from src.analysis import (
     plot_precipitation_spc,
     plot_temperature_lof
 )
 
-from NVE_API import get_nve_data
-from area_selector import select_area
-from weather_download import download_and_save_region_weather
+from src.NVE_API import get_nve_data
+from src.area_selector import select_area
+from src.weather_download import download_and_save_region_weather
 
-import weather_download
+import src.weather_download
 
 
 # ============================================================

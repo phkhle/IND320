@@ -1,10 +1,10 @@
 
 import streamlit as st
 import pandas as pd
-from area_selector import select_area
+from src.area_selector import select_area
 
-# Import function from NVE_API.py
-from NVE_API import get_nve_data
+# Import function from src.NVE_API.py
+from src.NVE_API import get_nve_data
 
 
 # ============================================================
