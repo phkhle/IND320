@@ -8,7 +8,19 @@ This project was developed for the IND320 course at the Norwegian University of 
 
 **Assignment 2:** Extends the Streamlit dashboard with historical cross-border electricity import and export data from the ENTSO-E Transparency Platform.
 
-## Data Pipeline
+**Assignment 3:** Weather and Time series analysis: Intergrates historical weather data from Open Meteo ERA5 and introduces anomaly detection, seasonal decomposition, and frequency analysis.
+
+
+## Data Sources and Processing
+
+### 1. NVE Reservoir Satistics
+Reservoir statistics are retrieved from the Norwegian Water Resources and Energy Directorate (NVE) API.
+
+The dashboard allows users to explore reservoir filling levels across different geographical areas and time periods.
+
+NVE Atlas shapefiles are also used to define geographical boundaries for the weather analysis.
+
+### 2. ENTSO-E Electricity Data pipeline
 
 The project uses Python, Apache Spark, Cassandra, and MongoDB Atlas to process and store electricity data.
 
@@ -42,6 +54,11 @@ The dataset covers **nine electricity connections** involving Norway.
 - **MongoDB Atlas:** Stores aggregated data in `entsoe_daily` (6,579 documents) and `entsoe_monthly` (216 documents).
 - **Streamlit:** Retrieves data from MongoDB Atlas and displays interactive visualizations.
 
+### 3. Historical Weather Data - Open-Meteo ERA5
+Assignment 3 introduces historical weather data using the Open-Meteo API and the ERA5 reanalysis model. The initial analysis focuses on NO3 during 2024.
+
+The weather download functionality is implemented in weather_download.py.
+
 ## Streamlit Dashboard
 
 The dashboard includes three pages:
@@ -65,7 +82,7 @@ The **Transfer** page allows users to:
 ```bash
 git clone https://github.com/phkhle/ind320.git
 cd ind320
-git switch project2
+git switch project3
 ```
 
 ### 2. Create a Virtual Environment
