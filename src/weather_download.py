@@ -51,7 +51,7 @@ def download_region_weather(
     """
 
     # Load sampled locations
-    project_root = Path(__file__).resolve().parent
+    project_root = Path(__file__).resolve().parent.parent
 
     locations_path = (
         project_root
@@ -104,7 +104,7 @@ def download_and_save_region_weather(
     Save each completed batch and skip it on future runs.
     """
 
-    project_root = Path(__file__).resolve().parent
+    project_root = Path(__file__).resolve().parent.parent
 
     if locations is None:
         locations = pd.read_csv(
