@@ -1,5 +1,6 @@
 
 import streamlit as st
+from src.interactive_map import show_interactive_map
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -29,6 +30,13 @@ def home_page():
         Developed as part of the IND320 course at NMBU.
         """
     )
+
+    st.divider()
+
+    st.header("Explore Norwegian Energy Regions")
+
+    show_interactive_map()
+
 
     st.divider()
 
