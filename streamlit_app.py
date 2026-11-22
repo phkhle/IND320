@@ -152,7 +152,13 @@ pages = {
             "pages/5_Weather_Anomalies.py",
             title="Weather Anomalies",
             icon="🌦️"
-        )
+        ),
+        
+        st.Page(
+            "pages/6_Sliding_Correlation.py",
+            title="Sliding Window Correlation",
+            icon="📈"
+    )
     ]
 }
 
