@@ -7,7 +7,7 @@ from pathlib import Path
 
 from src.analysis import (
     plot_weather_spc,
-    plot_temperature_lof
+    plot_weather_lof
 )
 
 from src.NVE_API import get_nve_data
@@ -235,11 +235,19 @@ with tab1:
 
 with tab2:
 
-    st.subheader("Temperature Anomaly Detection")
+    st.subheader("Weather Anomaly Detection – LOF")
 
     st.write(
         "Use Local Outlier Factor to identify "
-        "unusual hourly temperatures."
+        "unusual hourly weather observations."
+    )
+
+    # Weather property selector
+    weather_property_lof = st.selectbox(
+        "Select weather property",
+        ["Temperature", "Precipitation"],
+        index=0,
+        key="lof_weather_property"
     )
 
     col1, col2 = st.columns(2)
@@ -263,20 +271,20 @@ with tab2:
             value=20
         )
 
-    fig, summary = plot_temperature_lof(
+    # Run LOF analysis
+    fig, summary = plot_weather_lof(
         df=weather_df,
-        region = region,
+        region=region,
+        weather_property=weather_property_lof,
         contamination=contamination,
-        n_neighbors=n_neighbors,
-        
+        n_neighbors=n_neighbors
     )
 
-    st.pyplot(fig)
-    plt.close(fig)
+    # Display interactive Plotly chart
+    st.plotly_chart(fig, use_container_width=True)
 
     with st.expander("LOF Summary"):
         st.write(summary)
-
 
 # ============================================================
 # 7. DATA SOURCE

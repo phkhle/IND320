@@ -147,32 +147,48 @@ def plot_weather_spc(
     return fig, summary
 
 
-# Plot temperature with LOF anomalies
-def plot_temperature_lof(
+# Plot weather with LOF anomalies
+def plot_weather_lof(
     df,
-    region = 'NO3',
+    region="NO3",
+    weather_property="Temperature",
     contamination=0.01,
-    n_neighbors=20,
-    
+    n_neighbors=20
 ):
     """
-    Detect temperature anomalies using Local Outlier Factor.
+    Detect weather anomalies using Local Outlier Factor.
 
+    Supports temperature and precipitation.
     """
 
+    # Select weather variable
+    properties = {
+        "Temperature": ("temperature_mean", "Temperature (°C)"),
+        "Precipitation": ("precipitation_mean", "Precipitation (mm/hour)")
+    }
+
+    if weather_property not in properties:
+        raise ValueError("Invalid weather property")
+
+    column, ylabel = properties[weather_property]
+
+    # Prepare data
     data = df.sort_values("time").copy()
+    data = data.dropna(subset=[column])
 
-    # Extract temperature values
-    temperature = data["temperature_mean"].to_numpy()
+    values = data[column].to_numpy(dtype=float)
 
-    if not np.isfinite(temperature).all():
-        raise ValueError("Temperature contains missing or infinite values")
+    if not np.isfinite(values).all():
+        raise ValueError("Weather data contains infinite values")
 
     if not 0 < contamination <= 0.5:
         raise ValueError("contamination must be between 0 and 0.5")
 
+    if not 1 <= n_neighbors < len(values):
+        raise ValueError("n_neighbors must be smaller than the number of observations")
+
     # LOF expects a two-dimensional feature matrix
-    X = temperature.reshape(-1, 1)
+    X = values.reshape(-1, 1)
 
     # Initialize LOF model
     lof = LocalOutlierFactor(
@@ -180,48 +196,46 @@ def plot_temperature_lof(
         contamination=contamination
     )
 
-    # -1 = outlier, 1 = inlier
+    # Detect anomalies
     labels = lof.fit_predict(X)
 
     outliers = labels == -1
 
-    # Plot original temperature
-    fig, ax = plt.subplots(figsize=(15, 5))
+    # Create interactive Plotly figure
+    fig = go.Figure()
 
-    ax.plot(
-        data["time"],
-        temperature,
-        color="steelblue",
-        linewidth=0.8,
-        label="Average temperature"
+    fig.add_trace(go.Scatter(
+        x=data["time"],
+        y=values,
+        mode="lines",
+        name=weather_property,
+        line=dict(color="steelblue", width=1)
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=data.loc[outliers, "time"],
+        y=values[outliers],
+        mode="markers",
+        name="LOF anomalies",
+        marker=dict(color="red", size=6)
+    ))
+
+    fig.update_layout(
+        title=f"{weather_property} LOF Anomaly Detection – {region}",
+        xaxis_title="Date",
+        yaxis_title=ylabel,
+        template="plotly_white",
+        hovermode="closest",
+        height=450
     )
-
-    ax.scatter(
-        data.loc[outliers, "time"],
-        temperature[outliers],
-        color="red",
-        s=18,
-        label="LOF anomalies",
-        zorder=3
-    )
-
-    ax.set(
-        title=f"Temperature Anomaly Detection – {region} (2024)",
-        xlabel="Date",
-        ylabel="Average temperature (°C)"
-    )
-
-    ax.legend()
-    ax.grid(alpha=0.3)
-
-    plt.tight_layout()
 
     # Summary statistics
     summary = {
+        "weather_property": weather_property,
         "n_observations": len(data),
-        "mean_temperature": float(np.mean(temperature)),
-        "min_temperature": float(np.min(temperature)),
-        "max_temperature": float(np.max(temperature)),
+        "mean": float(np.mean(values)),
+        "min": float(np.min(values)),
+        "max": float(np.max(values)),
         "n_outliers": int(outliers.sum()),
         "outlier_percentage": float(outliers.mean() * 100),
         "contamination": contamination,
@@ -229,7 +243,6 @@ def plot_temperature_lof(
     }
 
     return fig, summary
-
 
 
 # Plot STL decomposition of reservoir filling degree
