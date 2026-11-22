@@ -544,4 +544,124 @@ def tune_snarimax(
     }
 
     return results_df, best_params
-    
+
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
+
+
+def evaluate_multistep_forecast(
+    df,
+    n_lags=4,
+    horizon=12,
+    test_weeks=52
+):
+    """
+    Evaluate recursive multi-step forecasts using
+    historical rolling forecast origins.
+
+    Each forecast uses only observations available
+    at its forecast origin.
+    """
+
+    data = df.copy()
+
+    data["dato_Id"] = pd.to_datetime(data["dato_Id"])
+
+    data["fyllingsgrad"] = pd.to_numeric(
+        data["fyllingsgrad"],
+        errors="coerce"
+    )
+
+    data = (
+        data.dropna(subset=["dato_Id"])
+        .sort_values("dato_Id")
+        .drop_duplicates("dato_Id")
+        .set_index("dato_Id")["fyllingsgrad"]
+        .asfreq("7D")
+    )
+
+    if len(data) < test_weeks + n_lags + horizon:
+        raise ValueError("Not enough historical data.")
+
+    results = []
+
+    # Rolling forecast origins in the test period
+    for origin in range(
+        len(data) - test_weeks - 1,
+        len(data) - horizon
+    ):
+
+        history = data.iloc[:origin + 1]
+
+        # Require complete recent lag observations
+        if history.iloc[-n_lags:].isna().any():
+            continue
+
+        forecast = forecast_reservoir_multistep(
+            df=history.reset_index(),
+            n_lags=n_lags,
+            horizon=horizon
+        )
+
+        actual = data.reindex(
+            pd.DatetimeIndex(forecast["date"])
+        ).to_numpy()
+
+        for step, (date, y_true, y_pred) in enumerate(
+            zip(
+                forecast["date"],
+                actual,
+                forecast["predicted"]
+            ),
+            start=1
+        ):
+
+            if pd.isna(y_true):
+                continue
+
+            results.append({
+                "origin": history.index[-1],
+                "date": date,
+                "horizon": step,
+                "actual": float(y_true),
+                "predicted": float(y_pred),
+                "baseline": float(history.iloc[-1])
+            })
+
+    predictions = pd.DataFrame(results)
+
+    if predictions.empty:
+        raise ValueError("No valid forecasts available.")
+
+    metrics = []
+
+    for step, group in predictions.groupby("horizon"):
+
+        y_true = group["actual"]
+
+        for model_name, pred_col in [
+            ("River", "predicted"),
+            ("Baseline", "baseline")
+        ]:
+
+            y_pred = group[pred_col]
+
+            metrics.append({
+                "Horizon": step,
+                "Model": model_name,
+                "MAE (pp)": mean_absolute_error(
+                    y_true, y_pred
+                ) * 100,
+                "RMSE (pp)": np.sqrt(
+                    mean_squared_error(y_true, y_pred)
+                ) * 100,
+                "R²": r2_score(y_true, y_pred)
+                if len(group) >= 2 else np.nan
+            })
+
+    metrics_df = pd.DataFrame(metrics)
+
+    return predictions, metrics_df
