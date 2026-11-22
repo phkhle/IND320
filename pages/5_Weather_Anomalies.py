@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 from src.analysis import (
-    plot_precipitation_spc,
+    plot_weather_spc,
     plot_temperature_lof
 )
 
@@ -169,29 +169,35 @@ st.caption(
 # ============================================================
 
 tab1, tab2 = st.tabs([
-    "Precipitation – SPC",
-    "Temperature – LOF"
+    "Weather – SPC",
+    "Weather – LOF"
 ])
 
-
 # ============================================================
-# 5. SPC ANALYSIS
+# 5. SPC/SATV ANALYSIS
 # ============================================================
 
 with tab1:
 
-    st.subheader("Precipitation Anomaly Detection")
+    st.subheader("Weather Anomaly Detection – SPC")
 
     st.write(
         "Apply DCT high-pass filtering and robust "
         "Statistical Process Control to identify "
-        "unusual precipitation observations."
+        "unusual weather observations."
+    )
+
+    # Weather property selector
+    weather_property = st.selectbox(
+        "Select weather property",
+        ["Temperature", "Precipitation"],
+        index=0,
+        key="satv_weather_property"
     )
 
     col1, col2 = st.columns(2)
 
     with col1:
-
         cutoff = st.slider(
             "DCT cutoff",
             min_value=1,
@@ -200,7 +206,6 @@ with tab1:
         )
 
     with col2:
-
         n_std = st.slider(
             "Number of standard deviations",
             min_value=1.0,
@@ -209,20 +214,20 @@ with tab1:
             step=0.5
         )
 
-    fig, summary = plot_precipitation_spc(
+    # Run SPC analysis using selected weather property
+    fig, summary = plot_weather_spc(
         df=weather_df,
-        region = region,
+        region=region,
+        weather_property=weather_property,
         cutoff=cutoff,
-        n_std=n_std,
-  
+        n_std=n_std
     )
 
-    st.pyplot(fig)
-    plt.close(fig)
+    # Display interactive Plotly chart
+    st.plotly_chart(fig, use_container_width=True)
 
     with st.expander("SPC Summary"):
         st.write(summary)
-
 
 # ============================================================
 # 6. LOF ANALYSIS

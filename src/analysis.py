@@ -6,6 +6,7 @@ from scipy.fft import dct, idct
 from scipy.signal import spectrogram
 from sklearn.neighbors import LocalOutlierFactor
 from statsmodels.tsa.seasonal import STL
+import plotly.graph_objects as go
 
 
 # High-pass filter using DCT
@@ -35,110 +36,115 @@ def dct_highpass_filter(values, cutoff=30):
     return filtered
 
 
-# PPlot precipitation with SPC limits and outliers
-def plot_precipitation_spc(
+def plot_weather_spc(
     df,
-    region = "NO3",
+    region="NO3",
+    weather_property="Temperature",
     cutoff=30,
-    n_std=3,
-  
+    n_std=3
 ):
     """
-    Detect precipitation outliers using DCT and robust SPC.
+    Detect weather anomalies using DCT high-pass filtering
+    and robust SPC limits.
+
+    Supports temperature and precipitation.
     """
 
+    # Select weather variable
+    properties = {
+        "Temperature": ("temperature_mean", "Temperature (°C)"),
+        "Precipitation": ("precipitation_mean", "Precipitation (mm/hour)")
+    }
+
+    if weather_property not in properties:
+        raise ValueError("Invalid weather property")
+
+    column, ylabel = properties[weather_property]
+
     data = df.sort_values("time").copy()
+    data = data.dropna(subset=[column])
 
-    precipitation = data["precipitation_mean"].to_numpy()
+    values = data[column].to_numpy(dtype=float)
 
-    # 1. Remove slow variations using DCT
-    satv = dct_highpass_filter(
-        precipitation,
-        cutoff=cutoff
-    )
+    # Remove low-frequency variations
+    satv = dct_highpass_filter(values, cutoff=cutoff)
 
-    # 2. Estimate robust statistics from the full year
+    # Robust statistics
     median = np.median(satv)
     mad = np.median(np.abs(satv - median))
-
     robust_std = 1.4826 * mad
 
-    # 3. Define SPC limits in the filtered domain
+    # SPC limits
     lower_limit = median - n_std * robust_std
     upper_limit = median + n_std * robust_std
 
-    # 4. Identify outliers using SATV
+    # Identify anomalies
     outliers = (satv < lower_limit) | (satv > upper_limit)
 
-    # 5. Convert SPC limits to original precipitation scale
-    baseline = precipitation - satv
+    # Convert SPC limits to original scale
+    baseline = values - satv
 
     lower_curve = baseline + lower_limit
     upper_curve = baseline + upper_limit
 
-    # 6. Plot original precipitation, not SATV
-    fig, ax = plt.subplots(figsize=(15, 5))
+    # Interactive Plotly figure
+    fig = go.Figure()
 
-    ax.plot(
-        data["time"],
-        precipitation,
-        color="steelblue",
-        linewidth=0.7,
-        label="Average precipitation"
+    fig.add_trace(go.Scatter(
+        x=data["time"],
+        y=values,
+        mode="lines",
+        name=weather_property,
+        line=dict(color="steelblue", width=1)
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=data["time"],
+        y=upper_curve,
+        mode="lines",
+        name="Upper SPC limit",
+        line=dict(color="darkorange", dash="dash")
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=data["time"],
+        y=lower_curve,
+        mode="lines",
+        name="Lower SPC limit",
+        line=dict(color="green", dash="dash")
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=data.loc[outliers, "time"],
+        y=values[outliers],
+        mode="markers",
+        name="Anomalies",
+        marker=dict(color="red", size=6)
+    ))
+
+    fig.update_layout(
+        title=f"{weather_property} SPC Analysis – {region}",
+        xaxis_title="Date",
+        yaxis_title=ylabel,
+        template="plotly_white",
+        hovermode="x unified",
+        height=450
     )
-
-    ax.plot(
-        data["time"],
-        upper_curve,
-        color="darkorange",
-        linestyle="--",
-        linewidth=1,
-        label="Upper SPC limit"
-    )
-
-    ax.plot(
-        data["time"],
-        lower_curve,
-        color="green",
-        linestyle="--",
-        linewidth=1,
-        label="Lower SPC limit"
-    )
-
-    ax.scatter(
-        data.loc[outliers, "time"],
-        precipitation[outliers],
-        color="red",
-        s=12,
-        label="Outliers",
-        zorder=3
-    )
-
-    ax.set(
-        title= f"Precipitation SPC Analysis – {region} (2024)",
-        xlabel="Date",
-        ylabel="Average precipitation (mm/hour)"
-    )
-
-    ax.legend()
-    ax.grid(alpha=0.3)
-
-    plt.tight_layout()
 
     summary = {
+        "weather_property": weather_property,
         "cutoff": cutoff,
         "n_std": n_std,
-        "median_satv": median,
-        "robust_std": robust_std,
-        "lower_limit_satv": lower_limit,
-        "upper_limit_satv": upper_limit,
+        "median_satv": float(median),
+        "robust_std": float(robust_std),
+        "lower_limit_satv": float(lower_limit),
+        "upper_limit_satv": float(upper_limit),
         "n_observations": len(data),
         "n_outliers": int(outliers.sum()),
-        "outlier_percentage": 100 * outliers.mean()
+        "outlier_percentage": float(100 * outliers.mean())
     }
 
     return fig, summary
-
 
 
 # Plot temperature with LOF anomalies
