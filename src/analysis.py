@@ -405,3 +405,69 @@ def plot_filling_spectrogram(
     }
 
     return fig, summary
+
+
+# ============================================================
+# SLIDING WINDOW CORRELATION
+# ============================================================
+
+def plot_sliding_correlation(
+    df,
+    weather_property="Temperature",
+    window=12,
+    lag=0
+):
+    """
+    Calculate rolling Pearson correlation between
+    weekly weather and reservoir filling degree.
+
+    Positive lag means weather leads reservoir filling.
+    """
+
+    properties = {
+        "Temperature": ("temperature_mean", "Temperature"),
+        "Precipitation": ("precipitation_mean", "Precipitation")
+    }
+
+    weather_col, weather_label = properties[weather_property]
+
+    data = df.sort_values("date").copy()
+
+    # Shift weather values to compare earlier weather
+    # with later reservoir filling
+    data["weather_lagged"] = data[weather_col].shift(lag)
+
+    # Rolling Pearson correlation
+    data["correlation"] = (
+        data["weather_lagged"]
+        .rolling(window=window, min_periods=window)
+        .corr(data["fyllingsgrad"])
+    )
+
+    # Create interactive Plotly chart
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=data["date"],
+        y=data["correlation"],
+        mode="lines",
+        name="Rolling correlation",
+        line=dict(color="steelblue", width=2)
+    ))
+
+    fig.add_hline(
+        y=0,
+        line_dash="dash",
+        line_color="gray"
+    )
+
+    fig.update_layout(
+        title=f"Sliding Window Correlation – {weather_label}",
+        xaxis_title="Date",
+        yaxis_title="Pearson correlation",
+        yaxis_range=[-1, 1],
+        template="plotly_white",
+        height=450
+    )
+
+    return fig, data
