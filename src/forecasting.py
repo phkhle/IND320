@@ -12,7 +12,6 @@ from sklearn.metrics import (
 from itertools import product
 
 
-
 def forecast_reservoir(
     df,
     n_lags=4,
@@ -545,11 +544,6 @@ def tune_snarimax(
 
     return results_df, best_params
 
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score
-)
 
 
 def evaluate_multistep_forecast(
