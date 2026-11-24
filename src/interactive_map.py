@@ -326,15 +326,23 @@ def show_interactive_map():
     # 5.4 Select geographical boundaries
     # --------------------------------------------------------
 
-    if map_layer == "Weather Property":
-        geojson = load_weather_regions()
-        layer_name = "Weather Regions"
-        region_label = "Weather region"
+    if map_layer == "Price Area":
 
-    else:
         geojson = load_price_areas()
         layer_name = "Price Areas"
         region_label = "Price area"
+
+    elif map_layer == "Water Area":
+
+        geojson = load_weather_regions()
+        layer_name = "Water Areas"
+        region_label = "Water area"
+
+    else:
+
+        geojson = load_weather_regions()
+        layer_name = "Weather Regions"
+        region_label = "Weather region"
 
     regions = sorted({
         feature["properties"]["region"]
@@ -361,11 +369,7 @@ def show_interactive_map():
             f"Selected region: {st.session_state.selected_region}"
         )
 
-        if map_layer == "Water Area":
-            st.warning(
-                "Water area boundaries are not connected yet. "
-                "Showing price areas temporarily."
-            )
+     
 
     # --------------------------------------------------------
     # 5.6 Weather values and colour scale

@@ -72,6 +72,12 @@ def home_page():
 
     st.header("Explore Norwegian Energy Regions")
 
+    st.info(
+    "Reservoir filling forecasts are currently only "
+    "available for the NO3 price area."
+)
+
+
     show_interactive_map()
 
 

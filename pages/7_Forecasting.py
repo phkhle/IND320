@@ -20,6 +20,13 @@ st.write(
     """
 )
 
+st.info(
+    "Forecasting is currently only available for NO3, "
+    "as model development and validation in Assignment 4 "
+    "were conducted for this price area."
+)
+
+
 st.divider()
 
 
