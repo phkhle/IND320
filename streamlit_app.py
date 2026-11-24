@@ -1,6 +1,9 @@
 
 import streamlit as st
+
 from src.interactive_map import show_interactive_map
+from src.forecast_controls import DEFAULT_CONFIG
+
 
 # ============================================================
 # PAGE CONFIGURATION
@@ -12,6 +15,34 @@ st.set_page_config(
     layout="wide"
 )
 
+# ============================================================
+# SHARED FORECAST CONFIGURATION
+# ============================================================
+
+if "use_default_forecast" not in st.session_state:
+
+    st.session_state.use_default_forecast = True
+
+
+if "training_start" not in st.session_state:
+
+    st.session_state.training_start = (
+        DEFAULT_CONFIG["training_start"]
+    )
+
+
+if "training_end" not in st.session_state:
+
+    st.session_state.training_end = (
+        DEFAULT_CONFIG["training_end"]
+    )
+
+
+if "forecast_exog_cols" not in st.session_state:
+
+    st.session_state.forecast_exog_cols = (
+        DEFAULT_CONFIG["exog_cols"].copy()
+    )
 
 # ============================================================
 # HOME PAGE
@@ -159,6 +190,14 @@ pages = {
             title="Sliding Window Correlation",
             icon="📈"
     )
+    ],
+
+    "Forecasting": [
+        st.Page(
+            "pages/7_Forecasting.py",
+            title="Reservoir Filling Forecast",
+            icon="🔮"
+        )
     ]
 }
 

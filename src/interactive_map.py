@@ -9,7 +9,10 @@ import branca.colormap as cm
 
 from streamlit_folium import st_folium
 
-
+from src.forecast_controls import (
+    get_available_data,
+    show_training_period
+)
 # ============================================================
 # 1. FILE PATHS
 # ============================================================
@@ -176,11 +179,70 @@ def show_interactive_map():
             key="map_layer"
         )
 
+        # ----------------------------------------------------
+        # Shared forecasting period
+        # ----------------------------------------------------
+
+        st.subheader("Forecast Training Period")
+        if st.session_state.get("use_default_forecast", True):
+
+            st.caption(
+                "Using the recommended model configuration. "
+                "To customize the training period, disable the "
+                "recommended configuration on the Forecasting page."
+            )
+
+        else:
+
+            st.caption(
+                "Custom training period. "
+                "Changes are synchronized with the Forecasting page."
+            )
+
+
+        st.caption(
+            "Shared with the NO3 forecasting page."
+        )
+
+        try:
+
+            df_forecast_available = get_available_data(
+                region="NO3",
+                exog_cols=st.session_state.get(
+                    "forecast_exog_cols",
+                    ["temperature_mean"]
+                )
+            )
+
+            training_start, training_end = show_training_period(
+            df=df_forecast_available,
+            prefix="map",
+            disabled=st.session_state.get(
+                "use_default_forecast",
+                True
+            )
+    )
+
+        except Exception as error:
+
+            st.warning(
+                f"Could not load forecasting period: {error}"
+            )
+
+        st.divider()
+
+        # ----------------------------------------------------
+        # Initialize weather settings
+        # ----------------------------------------------------
+
         weather_property = None
         weather_values = {}
         color_scale = None
 
+        # ----------------------------------------------------
         # Weather controls
+        # ----------------------------------------------------
+
         if map_layer == "Weather Property":
 
             weather_property = st.selectbox(
@@ -189,25 +251,74 @@ def show_interactive_map():
                 key="weather_property"
             )
 
+            weather_df = load_weather_data()
+
+            if weather_df.empty:
+
+                st.warning("No weather data available.")
+                st.stop()
+
+            # Available weather period
+            min_weather_date = weather_df["time"].min().date()
+            max_weather_date = weather_df["time"].max().date()
+
+            st.caption(
+                f"Available weather data: "
+                f"{min_weather_date} – {max_weather_date}"
+            )
+
+            # Get previous start date
+            weather_start = st.session_state.get(
+                "weather_start",
+                min_weather_date
+            )
+
+            weather_start = min(
+                max(weather_start, min_weather_date),
+                max_weather_date
+            )
+
+            # Get previous end date
+            weather_end = st.session_state.get(
+                "weather_end",
+                min(
+                    max_weather_date,
+                    (
+                        pd.Timestamp(weather_start)
+                        + pd.Timedelta(days=30)
+                    ).date()
+                )
+            )
+
+            weather_end = min(
+                max(weather_end, weather_start),
+                max_weather_date
+            )
+
+            # Update session state before creating widgets
+            st.session_state.weather_start = weather_start
+            st.session_state.weather_end = weather_end
+
+            # Start date selector
             start_date = st.date_input(
-                "Start date",
-                value=pd.Timestamp("2024-01-01").date(),
-                min_value=pd.Timestamp("2024-01-01").date(),
-                max_value=pd.Timestamp("2024-12-31").date(),
+                "Weather start date",
+                min_value=min_weather_date,
+                max_value=max_weather_date,
                 key="weather_start"
             )
 
+            # Ensure end date is not before start date
+            if st.session_state.weather_end < start_date:
+
+                st.session_state.weather_end = start_date
+
+            # End date selector
             end_date = st.date_input(
-                "End date",
-                value=pd.Timestamp("2024-01-31").date(),
-                min_value=pd.Timestamp("2024-01-01").date(),
-                max_value=pd.Timestamp("2024-12-31").date(),
+                "Weather end date",
+                min_value=start_date,
+                max_value=max_weather_date,
                 key="weather_end"
             )
-
-            if start_date > end_date:
-                st.error("Start date must be before end date.")
-                st.stop()
 
     # --------------------------------------------------------
     # 5.4 Select geographical boundaries
