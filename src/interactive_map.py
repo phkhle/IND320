@@ -11,10 +11,8 @@ from streamlit_folium import st_folium
 
 from src.forecast_controls import (
     get_available_data,
-    show_training_period,
-    show_forecast_horizon
+    show_training_period
 )
-
 # ============================================================
 # 1. FILE PATHS
 # ============================================================
@@ -181,30 +179,17 @@ def show_interactive_map():
             key="map_layer"
         )
 
+
         # ----------------------------------------------------
-        # Shared forecasting period
+        # Shared time period
         # ----------------------------------------------------
 
-        st.subheader("Forecast Training Period")
-        use_default = st.session_state.get(
-        "use_default_forecast",
-        True
-)
+        st.subheader("Time Period")
 
-        if use_default:
-
-            st.caption(
-                "Using the recommended model configuration. "
-                "To customize the settings, disable the recommended "
-                "configuration on the Forecasting page."
-            )
-
-        else:
-
-            st.caption(
-                "Training period and forecast horizon are "
-                "synchronized with the Forecasting page."
-            )
+        st.caption(
+            "The selected period is shared with "
+            "the Forecasting page."
+        )
 
         try:
 
@@ -219,15 +204,13 @@ def show_interactive_map():
             training_start, training_end = show_training_period(
                 df=df_forecast_available,
                 prefix="map",
-                disabled=use_default
+                disabled=False
             )
 
-            horizon = show_forecast_horizon(
-                prefix="map",
-                disabled=use_default
-            )
+            # Get the shared forecast horizon
+            horizon = st.session_state.forecast_horizon
 
-            # Find the last available weekly training observation
+            # Find the last available training observation
             last_observation = df_forecast_available.loc[
                 (
                     df_forecast_available["dato_Id"]
@@ -251,21 +234,21 @@ def show_interactive_map():
                 ).date()
 
                 st.caption(
-                    f"Forecast period: {forecast_start} – {forecast_end}"
+                    f"Forecast horizon: {horizon} weeks"
                 )
 
-            else:
-
-                st.warning("No observations in the selected period.")
+                st.caption(
+                    f"Forecast period: "
+                    f"{forecast_start} – {forecast_end}"
+                )
 
         except Exception as error:
 
             st.warning(
-                f"Could not load forecasting settings: {error}"
+                f"Could not load time period: {error}"
             )
 
         st.divider()
-
         # ----------------------------------------------------
         # Initialize weather settings
         # ----------------------------------------------------

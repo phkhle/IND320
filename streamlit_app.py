@@ -49,6 +49,7 @@ if "forecast_horizon" not in st.session_state:
     st.session_state.forecast_horizon = (
         DEFAULT_CONFIG["horizon"]
     )
+    
 # ============================================================
 # HOME PAGE
 # ============================================================
