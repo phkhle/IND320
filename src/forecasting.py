@@ -188,6 +188,75 @@ def forecast_reservoir_multistep(
         "predicted": predictions
     })
 
+def forecast_reservoir_snarimax(
+    df,
+    horizon=12,
+    p=1,
+    d=1,
+    q=1,
+    m=52,
+    sp=1,
+    sd=0,
+    sq=0
+):
+    """
+    Train SNARIMAX on historical weekly reservoir filling
+    and forecast multiple weeks ahead.
+    """
+
+    data = df.copy()
+
+    data["dato_Id"] = pd.to_datetime(data["dato_Id"])
+    data["fyllingsgrad"] = pd.to_numeric(
+        data["fyllingsgrad"], errors="coerce"
+    )
+
+    series = (
+        data.dropna(subset=["dato_Id"])
+        .sort_values("dato_Id")
+        .drop_duplicates("dato_Id")
+        .set_index("dato_Id")["fyllingsgrad"]
+        .asfreq("7D")
+    )
+
+    # SNARIMAX requires regularly spaced observations.
+    # Do not silently replace missing weeks with zero.
+    if series.isna().any():
+        raise ValueError(
+            "Missing weekly observations. Check the date range."
+        )
+
+    if len(series) < max(104, m * max(sp, sd, sq) + 2):
+        raise ValueError("Insufficient training history.")
+
+    model = time_series.SNARIMAX(
+        p=p,
+        d=d,
+        q=q,
+        m=m,
+        sp=sp,
+        sd=sd,
+        sq=sq
+    )
+
+    # Train chronologically
+    for value in series:
+        model.learn_one(float(value))
+
+    # Recursive forecast without future observations
+    predictions = model.forecast(horizon=horizon)
+
+    forecast_dates = pd.date_range(
+        start=series.index[-1] + pd.Timedelta(weeks=1),
+        periods=horizon,
+        freq="7D"
+    )
+
+    return pd.DataFrame({
+        "date": forecast_dates,
+        "predicted": predictions
+    })
+
 
 
 def evaluate_forecasting_models(
@@ -330,75 +399,6 @@ def evaluate_forecasting_models(
 
     return predictions_df, metrics_df
 
-
-def forecast_reservoir_snarimax(
-    df,
-    horizon=12,
-    p=1,
-    d=1,
-    q=1,
-    m=52,
-    sp=1,
-    sd=0,
-    sq=0
-):
-    """
-    Train SNARIMAX on historical weekly reservoir filling
-    and forecast multiple weeks ahead.
-    """
-
-    data = df.copy()
-
-    data["dato_Id"] = pd.to_datetime(data["dato_Id"])
-    data["fyllingsgrad"] = pd.to_numeric(
-        data["fyllingsgrad"], errors="coerce"
-    )
-
-    series = (
-        data.dropna(subset=["dato_Id"])
-        .sort_values("dato_Id")
-        .drop_duplicates("dato_Id")
-        .set_index("dato_Id")["fyllingsgrad"]
-        .asfreq("7D")
-    )
-
-    # SNARIMAX requires regularly spaced observations.
-    # Do not silently replace missing weeks with zero.
-    if series.isna().any():
-        raise ValueError(
-            "Missing weekly observations. Check the date range."
-        )
-
-    if len(series) < max(104, m * max(sp, sd, sq) + 2):
-        raise ValueError("Insufficient training history.")
-
-    model = time_series.SNARIMAX(
-        p=p,
-        d=d,
-        q=q,
-        m=m,
-        sp=sp,
-        sd=sd,
-        sq=sq
-    )
-
-    # Train chronologically
-    for value in series:
-        model.learn_one(float(value))
-
-    # Recursive forecast without future observations
-    predictions = model.forecast(horizon=horizon)
-
-    forecast_dates = pd.date_range(
-        start=series.index[-1] + pd.Timedelta(weeks=1),
-        periods=horizon,
-        freq="7D"
-    )
-
-    return pd.DataFrame({
-        "date": forecast_dates,
-        "predicted": predictions
-    })
 
 
 def tune_snarimax(
