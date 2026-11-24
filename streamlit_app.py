@@ -44,6 +44,11 @@ if "forecast_exog_cols" not in st.session_state:
         DEFAULT_CONFIG["exog_cols"].copy()
     )
 
+if "forecast_horizon" not in st.session_state:
+
+    st.session_state.forecast_horizon = (
+        DEFAULT_CONFIG["horizon"]
+    )
 # ============================================================
 # HOME PAGE
 # ============================================================

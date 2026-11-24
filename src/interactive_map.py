@@ -11,8 +11,10 @@ from streamlit_folium import st_folium
 
 from src.forecast_controls import (
     get_available_data,
-    show_training_period
+    show_training_period,
+    show_forecast_horizon
 )
+
 # ============================================================
 # 1. FILE PATHS
 # ============================================================
@@ -184,25 +186,25 @@ def show_interactive_map():
         # ----------------------------------------------------
 
         st.subheader("Forecast Training Period")
-        if st.session_state.get("use_default_forecast", True):
+        use_default = st.session_state.get(
+        "use_default_forecast",
+        True
+)
+
+        if use_default:
 
             st.caption(
                 "Using the recommended model configuration. "
-                "To customize the training period, disable the "
-                "recommended configuration on the Forecasting page."
+                "To customize the settings, disable the recommended "
+                "configuration on the Forecasting page."
             )
 
         else:
 
             st.caption(
-                "Custom training period. "
-                "Changes are synchronized with the Forecasting page."
+                "Training period and forecast horizon are "
+                "synchronized with the Forecasting page."
             )
-
-
-        st.caption(
-            "Shared with the NO3 forecasting page."
-        )
 
         try:
 
@@ -215,18 +217,51 @@ def show_interactive_map():
             )
 
             training_start, training_end = show_training_period(
-            df=df_forecast_available,
-            prefix="map",
-            disabled=st.session_state.get(
-                "use_default_forecast",
-                True
+                df=df_forecast_available,
+                prefix="map",
+                disabled=use_default
             )
-    )
+
+            horizon = show_forecast_horizon(
+                prefix="map",
+                disabled=use_default
+            )
+
+            # Find the last available weekly training observation
+            last_observation = df_forecast_available.loc[
+                (
+                    df_forecast_available["dato_Id"]
+                    >= pd.Timestamp(training_start)
+                ) &
+                (
+                    df_forecast_available["dato_Id"]
+                    <= pd.Timestamp(training_end)
+                ),
+                "dato_Id"
+            ].max()
+
+            if pd.notna(last_observation):
+
+                forecast_start = (
+                    last_observation + pd.Timedelta(weeks=1)
+                ).date()
+
+                forecast_end = (
+                    last_observation + pd.Timedelta(weeks=horizon)
+                ).date()
+
+                st.caption(
+                    f"Forecast period: {forecast_start} – {forecast_end}"
+                )
+
+            else:
+
+                st.warning("No observations in the selected period.")
 
         except Exception as error:
 
             st.warning(
-                f"Could not load forecasting period: {error}"
+                f"Could not load forecasting settings: {error}"
             )
 
         st.divider()
@@ -262,63 +297,47 @@ def show_interactive_map():
             min_weather_date = weather_df["time"].min().date()
             max_weather_date = weather_df["time"].max().date()
 
+            # Use the shared training period
+            start_date = st.session_state.training_start
+            end_date = st.session_state.training_end
+
             st.caption(
-                f"Available weather data: "
-                f"{min_weather_date} – {max_weather_date}"
-            )
+            f"Selected period: {start_date} – {end_date}"
+        )
 
-            # Get previous start date
-            weather_start = st.session_state.get(
-                "weather_start",
-                min_weather_date
-            )
+            st.caption(
+            f"Available map weather data: "
+            f"{min_weather_date} – {max_weather_date}"
+        )
 
-            weather_start = min(
-                max(weather_start, min_weather_date),
-                max_weather_date
-            )
+            # Check weather data coverage
+            if (
+                end_date < min_weather_date
+                or start_date > max_weather_date
+            ):
 
-            # Get previous end date
-            weather_end = st.session_state.get(
-                "weather_end",
-                min(
-                    max_weather_date,
-                    (
-                        pd.Timestamp(weather_start)
-                        + pd.Timedelta(days=30)
-                    ).date()
+                st.warning(
+                    "No map weather data is available "
+                    "for the selected training period."
                 )
-            )
 
-            weather_end = min(
-                max(weather_end, weather_start),
-                max_weather_date
-            )
+            elif (
+                start_date < min_weather_date
+                or end_date > max_weather_date
+            ):
 
-            # Update session state before creating widgets
-            st.session_state.weather_start = weather_start
-            st.session_state.weather_end = weather_end
+                st.warning(
+                    "Weather data only covers part of the "
+                    "selected training period. The map displays "
+                    "aggregated values from available observations."
+                )
 
-            # Start date selector
-            start_date = st.date_input(
-                "Weather start date",
-                min_value=min_weather_date,
-                max_value=max_weather_date,
-                key="weather_start"
-            )
-
-            # Ensure end date is not before start date
-            if st.session_state.weather_end < start_date:
-
-                st.session_state.weather_end = start_date
-
-            # End date selector
-            end_date = st.date_input(
-                "Weather end date",
-                min_value=start_date,
-                max_value=max_weather_date,
-                key="weather_end"
-            )
+                st.caption(
+                    f"Effective weather period: "
+                    f"{max(start_date, min_weather_date)} – "
+                    f"{min(end_date, max_weather_date)}"
+                )
+                    
 
     # --------------------------------------------------------
     # 5.4 Select geographical boundaries

@@ -7,7 +7,8 @@ from src.forecasting import forecast_reservoir_snarimax
 from src.forecast_controls import (
     DEFAULT_CONFIG,
     get_available_data,
-    show_training_period
+    show_training_period,
+    show_forecast_horizon
 )
 
 st.title("Reservoir Filling Forecast")
@@ -202,16 +203,8 @@ with col1:
 
 with col2:
 
-    if "forecast_horizon" not in st.session_state:
-        st.session_state.forecast_horizon = (
-            DEFAULT_CONFIG["horizon"]
-        )
-
-    horizon = st.slider(
-        "Forecast horizon (weeks)",
-        min_value=1,
-        max_value=26,
-        key="forecast_horizon",
+    horizon = show_forecast_horizon(
+        prefix="forecast",
         disabled=use_default
     )
 
@@ -228,7 +221,6 @@ st.caption(
     f"Selected training history: {n_weeks} weekly observations "
     f"({n_weeks / 52:.1f} years)"
 )
-
 
 # ============================================================
 # 5. MODEL PARAMETERS
