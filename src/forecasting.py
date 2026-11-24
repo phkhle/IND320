@@ -191,13 +191,16 @@ def forecast_reservoir_multistep(
 def forecast_reservoir_snarimax(
     df,
     horizon=12,
+    # none seasonal parameters
     p=1,
     d=1,
     q=1,
+    # Seasonal parameters
     m=52,
     sp=1,
     sd=0,
-    sq=0
+    sq=0,
+    history_weeks = None
 ):
     """
     Train SNARIMAX on historical weekly reservoir filling
@@ -218,6 +221,13 @@ def forecast_reservoir_snarimax(
         .set_index("dato_Id")["fyllingsgrad"]
         .asfreq("7D")
     )
+
+    # Select the length of training history
+    if history_weeks is not None:
+        if history_weeks <= 0:
+            raise ValueError("history_weeks must be positive.")
+
+        series = series.tail(history_weeks)
 
     # SNARIMAX requires regularly spaced observations.
     # Do not silently replace missing weeks with zero.
@@ -659,3 +669,117 @@ def evaluate_multistep_forecast(
     metrics_df = pd.DataFrame(metrics)
 
     return predictions, metrics_df
+
+
+
+def evaluate_history_length(
+    df,
+    history_years_list=(5, 10, 20, None),
+    horizon=12,
+    val_weeks=52,
+    origin_step=1,
+    snarimax_params=None
+):
+    import time
+
+    if snarimax_params is None:
+        snarimax_params = {}
+
+    data = df.copy()
+
+    data["dato_Id"] = pd.to_datetime(data["dato_Id"])
+    data["fyllingsgrad"] = pd.to_numeric(
+        data["fyllingsgrad"], errors="coerce"
+    )
+
+    data = (
+        data.dropna(subset=["dato_Id"])
+        .sort_values("dato_Id")
+        .drop_duplicates("dato_Id")
+        .set_index("dato_Id")["fyllingsgrad"]
+        .asfreq("7D")
+    )
+
+    # Same evaluation period for all candidates
+    first_origin = len(data) - val_weeks - 1
+    last_origin = len(data) - horizon - 1
+
+    results = []
+    runtimes = []
+
+    for years in history_years_list:
+
+        history_weeks = None if years is None else years * 52
+        label = "Full history" if years is None else f"{years} years"
+
+        print(f"Evaluating {label}...")
+
+        start_time = time.perf_counter()
+
+        for origin in range(
+            first_origin,
+            last_origin + 1,
+            origin_step
+        ):
+
+            history = data.iloc[:origin + 1]
+
+            history_df = (
+                history.rename_axis("dato_Id")
+                .reset_index(name="fyllingsgrad")
+            )
+
+            forecast = forecast_reservoir_snarimax(
+                df=history_df,
+                horizon=horizon,
+                history_weeks=history_weeks,
+                **snarimax_params
+            )
+
+            actual = data.reindex(
+                pd.DatetimeIndex(forecast["date"])
+            ).to_numpy()
+
+            for step in range(horizon):
+
+                results.append({
+                    "History": label,
+                    "Origin": history.index[-1],
+                    "Date": forecast["date"].iloc[step],
+                    "Horizon": step + 1,
+                    "Actual": actual[step],
+                    "Predicted": forecast["predicted"].iloc[step]
+                })
+
+        elapsed = time.perf_counter() - start_time
+
+        runtimes.append({
+            "History": label,
+            "Runtime (s)": elapsed
+        })
+
+    predictions_df = pd.DataFrame(results)
+
+    metrics = []
+
+    for (label, step), group in predictions_df.groupby(
+        ["History", "Horizon"]
+    ):
+
+        y_true = group["Actual"]
+        y_pred = group["Predicted"]
+
+        metrics.append({
+            "History": label,
+            "Horizon": step,
+            "MAE (pp)": mean_absolute_error(y_true, y_pred) * 100,
+            "RMSE (pp)": np.sqrt(
+                mean_squared_error(y_true, y_pred)
+            ) * 100,
+            "R²": r2_score(y_true, y_pred)
+        })
+
+    metrics_df = pd.DataFrame(metrics)
+    runtime_df = pd.DataFrame(runtimes)
+
+    return predictions_df, metrics_df, runtime_df
