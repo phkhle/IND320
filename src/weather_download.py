@@ -35,7 +35,44 @@ def get_era5_weather(latitude, longitude, start_date, end_date):
 
     return df
 
+def get_era5_weather_daily(
+    latitude,
+    longitude,
+    start_date,
+    end_date
+):
+    """
+    Download daily ERA5 reanalysis weather data
+    for a single geographic location.
+    """
 
+    url = "https://archive-api.open-meteo.com/v1/archive"
+
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "start_date": start_date,
+        "end_date": end_date,
+
+        # Daily weather variables
+        "daily": "temperature_2m_mean,precipitation_sum",
+
+        "models": "era5",
+        "timezone": "Europe/Oslo"
+    }
+
+    response = requests.get(url, params=params, timeout=60)
+    response.raise_for_status()
+
+    # Extract daily weather data
+    data = response.json()["daily"]
+
+    df = pd.DataFrame(data)
+
+    # Convert local calendar dates to datetime
+    df["time"] = pd.to_datetime(df["time"])
+
+    return df
 
 
 def download_region_weather(
@@ -87,6 +124,130 @@ def download_region_weather(
         results.append(weather)
 
     return pd.concat(results, ignore_index=True)
+
+
+
+def download_region_weather_daily(
+    region,
+    start_date,
+    end_date,
+    n_locations=1000,
+    batch_size=10
+):
+    """
+    Download daily ERA5 weather data in batches.
+
+    Save completed batches as parquet files and skip
+    previously downloaded batches.
+    """
+
+    project_root = Path(__file__).resolve().parent.parent
+
+    locations_path = (
+        project_root / "data" / "geography" / "weather_locations.csv"
+    )
+
+    locations = pd.read_csv(locations_path)
+
+    region_points = locations.loc[
+        locations["region"] == region
+    ].head(n_locations)
+
+    if region_points.empty:
+        raise ValueError(f"No locations found for {region}")
+
+    if batch_size < 1:
+        raise ValueError("batch_size must be at least 1")
+
+    # Create output directory
+    output_path = (
+        project_root / "data" / "weather_daily" / region
+    )
+
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    url = "https://archive-api.open-meteo.com/v1/archive"
+
+    for start in range(0, len(region_points), batch_size):
+
+        batch = region_points.iloc[start:start + batch_size]
+
+        first_id = batch["point_id"].iloc[0]
+        last_id = batch["point_id"].iloc[-1]
+
+        filename = (
+            f"{region}_{start_date}_{end_date}_"
+            f"{first_id}_{last_id}.parquet"
+        )
+
+        filepath = output_path / filename
+
+        # Skip completed batches
+        if filepath.exists():
+            print(f"Already saved: {filename}")
+            continue
+
+        params = {
+            "latitude": ",".join(batch["latitude"].astype(str)),
+            "longitude": ",".join(batch["longitude"].astype(str)),
+            "start_date": start_date,
+            "end_date": end_date,
+            "daily": "temperature_2m_mean,precipitation_sum",
+            "models": "era5",
+            "timezone": "Europe/Oslo"
+        }
+
+        try:
+            response = requests.get(
+                url,
+                params=params,
+                timeout=120
+            )
+
+            if response.status_code == 429:
+                print("HTTP 429: API limit reached. Stopping.")
+                return
+
+            response.raise_for_status()
+            data = response.json()
+
+        except requests.RequestException as error:
+            print(f"Download stopped: {error}")
+            return
+
+        if isinstance(data, dict):
+            data = [data]
+
+        if len(data) != len(batch):
+            raise ValueError("Unexpected API response count")
+
+        results = []
+
+        for (_, point), location_data in zip(
+            batch.iterrows(), data
+        ):
+
+            df = pd.DataFrame(location_data["daily"])
+
+            df["time"] = pd.to_datetime(df["time"])
+            df["region"] = region
+            df["point_id"] = point["point_id"]
+
+            results.append(df)
+
+        batch_df = pd.concat(results, ignore_index=True)
+
+        # Save completed batch
+        batch_df.to_parquet(filepath, index=False)
+
+        print(
+            f"Saved {min(start + batch_size, len(region_points))}"
+            f"/{len(region_points)} locations"
+        )
+
+        time.sleep(1)
+
+    print("Download completed.")
 
 
 
