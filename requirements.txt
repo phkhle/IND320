@@ -18,3 +18,4 @@ shapely
 folium
 streamlit-folium
 river
+graphviz

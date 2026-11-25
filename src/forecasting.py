@@ -13,6 +13,8 @@ from itertools import product
 import time
 
 
+from river import linear_model, preprocessing, optim
+
 def forecast_reservoir(
     df,
     n_lags=4,
@@ -201,7 +203,8 @@ def forecast_reservoir_snarimax(
     sq=0,
     history_weeks=None,
     exog_cols=None,
-    weather_history_years=5
+    weather_history_years=5,
+    quantile = None
 ):
     """
     Forecast weekly reservoir filling using SNARIMAX,
@@ -257,6 +260,16 @@ def forecast_reservoir_snarimax(
     # 3. INITIALIZE MODEL
     # ========================================================
 
+    if quantile is None:
+        regressor = None
+    else:
+        regressor = (
+            preprocessing.StandardScaler()
+            | linear_model.LinearRegression(
+                loss=optim.losses.Quantile(alpha=quantile)
+            )
+        )
+
     model = time_series.SNARIMAX(
         p=p,
         d=d,
@@ -264,7 +277,8 @@ def forecast_reservoir_snarimax(
         m=m,
         sp=sp,
         sd=sd,
-        sq=sq
+        sq=sq,
+        regressor=regressor
     )
 
     # ========================================================
@@ -1271,3 +1285,47 @@ def evaluate_time_resolution(
         pd.DataFrame(metrics),
         pd.DataFrame(runtimes)
     )
+
+
+def forecast_reservoir_intervals(
+    df,
+    confidence=0.90,
+    **kwargs
+):
+    """
+    Generate point forecasts and experimental
+    quantile-based prediction intervals.
+    """
+
+    if not 0 < confidence < 1:
+        raise ValueError("Confidence must be between 0 and 1.")
+
+    alpha = (1 - confidence) / 2
+
+    # Point forecast
+    point = forecast_reservoir_snarimax(
+        df=df,
+        quantile=None,
+        **kwargs
+    )
+
+    # Lower quantile
+    lower = forecast_reservoir_snarimax(
+        df=df,
+        quantile=alpha,
+        **kwargs
+    )
+
+    # Upper quantile
+    upper = forecast_reservoir_snarimax(
+        df=df,
+        quantile=1 - alpha,
+        **kwargs
+    )
+
+    result = point.copy()
+
+    result["lower"] = lower["predicted"].to_numpy()
+    result["upper"] = upper["predicted"].to_numpy()
+
+    return result

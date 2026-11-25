@@ -2,7 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-from src.forecasting import forecast_reservoir_snarimax
+from src.forecasting import (
+    forecast_reservoir_snarimax,
+    forecast_reservoir_intervals
+)
+
 
 from src.forecast_controls import (
     DEFAULT_CONFIG,
@@ -10,6 +14,8 @@ from src.forecast_controls import (
     show_training_period,
     show_forecast_horizon
 )
+
+
 
 st.title("Reservoir Filling Forecast")
 
@@ -354,6 +360,25 @@ elif not df_train.empty:
 
 
 # ============================================================
+# PREDICTION INTERVAL SETTINGS
+# ============================================================
+
+st.subheader("Prediction Intervals")
+
+show_intervals = st.checkbox(
+    "Show prediction intervals",
+    value=False
+)
+
+confidence = st.selectbox(
+    "Confidence level",
+    options=[0.80, 0.90, 0.95],
+    index=1,
+    format_func=lambda x: f"{x:.0%}",
+    disabled=not show_intervals
+)
+
+# ============================================================
 # 7. CURRENT FORECAST CONFIGURATION
 # ============================================================
 
@@ -364,7 +389,9 @@ current_config = (
     horizon,
     p, d, q,
     m, sp, sd, sq,
-    tuple(exog_cols)
+    tuple(exog_cols),
+    show_intervals,
+    confidence
 )
 
 # Remove outdated forecasts when settings change
@@ -392,7 +419,7 @@ if st.button(
 
         with st.spinner("Generating forecast..."):
 
-            forecast = forecast_reservoir_snarimax(
+            forecast_params = dict(
                 df=df_train,
                 horizon=horizon,
                 p=p,
@@ -405,6 +432,19 @@ if st.button(
                 exog_cols=exog_cols,
                 weather_history_years=5
             )
+
+            if show_intervals:
+
+                forecast = forecast_reservoir_intervals(
+                    confidence=confidence,
+                    **forecast_params
+                )
+
+            else:
+
+                forecast = forecast_reservoir_snarimax(
+                    **forecast_params
+                )
 
             st.session_state.forecast_result = forecast
             st.session_state.forecast_history = df_train
@@ -477,20 +517,73 @@ if "forecast_result" in st.session_state:
         )
     )
 
-    # Animation frames
-    fig.frames = [
-        go.Frame(
-            data=[
-                go.Scatter(
-                    x=forecast_plot["date"].iloc[:i + 1],
-                    y=forecast_plot["predicted"].iloc[:i + 1] * 100
-                )
-            ],
-            traces=[1],
-            name=str(i)
+
+    # Prediction intervals
+    if show_intervals:
+
+        # Lower boundary
+        fig.add_trace(
+            go.Scatter(
+                x=forecast["date"],
+                y=forecast["lower"] * 100,
+                mode="lines",
+                line=dict(width=0),
+                showlegend=False,
+                hoverinfo="skip"
+            )
         )
-        for i in range(1, len(forecast_plot))
-    ]
+
+        # Upper boundary and shaded interval
+        fig.add_trace(
+            go.Scatter(
+                x=forecast["date"],
+                y=forecast["upper"] * 100,
+                mode="lines",
+                line=dict(width=0),
+                fill="tonexty",
+                fillcolor="rgba(233, 162, 59, 0.20)",
+                name=f"{confidence:.0%} prediction interval"
+            )
+        )
+
+    # Animation frames
+    frames = []
+
+    for i in range(1, len(forecast_plot)):
+
+        frame_data = [
+            go.Scatter(
+                x=forecast_plot["date"].iloc[:i + 1],
+                y=forecast_plot["predicted"].iloc[:i + 1] * 100
+            )
+        ]
+
+        trace_indices = [1]
+
+        if show_intervals:
+
+            frame_data.extend([
+                go.Scatter(
+                    x=forecast["date"].iloc[:i],
+                    y=forecast["lower"].iloc[:i] * 100
+                ),
+                go.Scatter(
+                    x=forecast["date"].iloc[:i],
+                    y=forecast["upper"].iloc[:i] * 100
+                )
+            ])
+
+            trace_indices.extend([2, 3])
+
+        frames.append(
+            go.Frame(
+                data=frame_data,
+                traces=trace_indices,
+                name=str(i)
+            )
+        )
+
+    fig.frames = frames
 
     fig.update_layout(
         paper_bgcolor="#E8EEF2",
@@ -566,17 +659,41 @@ if "forecast_result" in st.session_state:
     )
 
     st.plotly_chart(fig, use_container_width=True)
+    if show_intervals:
 
+        st.caption(
+            "Prediction intervals are estimated using Quantile Loss. "
+            "The intervals are experimental and their empirical "
+            "coverage has not been validated."
+        )
+
+        if (
+            (forecast["lower"] < 0).any()
+            or (forecast["upper"] > 1).any()
+        ):
+            st.warning(
+                "Some interval boundaries exceed the physical "
+                "range of reservoir filling (0–100%)."
+            )
     st.subheader("Predicted Reservoir Filling")
 
     forecast_table = forecast.copy()
 
-    forecast_table["predicted"] = (
-        forecast_table["predicted"] * 100
-    ).round(2)
+    column_names = {
+        "predicted": "Predicted filling (%)",
+        "lower": "Lower boundary (%)",
+        "upper": "Upper boundary (%)"
+    }
+
+    for col in column_names:
+
+        if col in forecast_table.columns:
+            forecast_table[col] = (
+                forecast_table[col] * 100
+            ).round(2)
 
     forecast_table = forecast_table.rename(
-        columns={"predicted": "Predicted filling (%)"}
+        columns=column_names
     )
 
     st.dataframe(
