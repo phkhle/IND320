@@ -59,96 +59,131 @@ def home_page():
     st.title("⚡ IND320 Energy Dashboard")
 
     st.write(
-        """
-        An interactive dashboard for exploring Norwegian
-        reservoir statistics, electricity transfers,
-        weather anomalies, and forecasting.
-
-        Developed as part of the IND320 course at NMBU.
-        """
+        "Explore Norwegian reservoir statistics, electricity "
+        "transfers, weather patterns and reservoir filling forecasts."
     )
 
-    st.divider()
-
-    st.header("Explore Norwegian Energy Regions")
-
-    st.info(
-    "Reservoir filling forecasts are currently only "
-    "available for the NO3 price area."
-)
-
+    # ========================================================
+    # INTERACTIVE MAP
+    # ========================================================
 
     show_interactive_map()
 
-
     st.divider()
 
-    st.header("About the Project")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.subheader("💧 Reservoir Statistics")
-        st.write(
-            "Explore historical reservoir filling levels, "
-            "storage capacity, and weekly changes using NVE data."
-        )
-
-    with col2:
-        st.subheader("⚡ Electricity Transfers")
-        st.write(
-            "Analyze electricity imports and exports using "
-            "ENTSO-E data stored in MongoDB Atlas."
-        )
-
-    with col3:
-        st.subheader("🌦️ Weather Analysis")
-        st.write(
-            "Explore ERA5 weather data and detect anomalies "
-            "using SPC and Local Outlier Factor."
-        )
-
-    st.divider()
+    # ========================================================
+    # DASHBOARD NAVIGATION
+    # ========================================================
 
     st.header("Explore the Dashboard")
 
-    st.write(
-        "Use the sidebar to navigate between "
-        "data exploration, analysis, and forecasting."
-    )
-
-    # Links to existing pages
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3, gap="medium")
 
     with col1:
-        st.page_link(
-            "pages/2_Reservoir_Statistics.py",
-            label="💧 Reservoir Statistics"
-        )
 
-        st.page_link(
-            "pages/4_Power_Transfer.py",
-            label="⚡ Electricity Transfers"
-        )
+        with st.container(border=True):
+
+            st.subheader("📂 Explore Data")
+
+            st.caption(
+                "Explore historical energy and reservoir observations."
+            )
+
+            st.page_link(
+                "pages/1_Reservoir_DataOverview.py",
+                label="Reservoir Data Overview",
+                icon="📋"
+            )
+
+            st.page_link(
+                "pages/2_Reservoir_Statistics.py",
+                label="Reservoir Statistics",
+                icon="💧"
+            )
+
+            st.page_link(
+                "pages/4_Power_Transfer.py",
+                label="Electricity Transfers",
+                icon="⚡"
+            )
 
     with col2:
-        st.page_link(
-            "pages/3_Reservoir_TimeSeriesAnalysis.py",
-            label="📊 Time Series Analysis"
-        )
 
-        st.page_link(
-            "pages/5_Weather_Anomalies.py",
-            label="🌦️ Weather Anomalies"
-        )
+        with st.container(border=True):
+
+            st.subheader("📊 Analysis")
+
+            st.caption(
+                "Investigate seasonal patterns and weather relationships."
+            )
+
+            st.page_link(
+                "pages/3_Reservoir_TimeSeriesAnalysis.py",
+                label="STL & Spectrogram",
+                icon="📊"
+            )
+
+            st.page_link(
+                "pages/5_Weather_Anomalies.py",
+                label="Weather Anomalies",
+                icon="🌦️"
+            )
+
+            st.page_link(
+                "pages/6_Sliding_Correlation.py",
+                label="Sliding Window Correlation",
+                icon="📈"
+            )
+
+    with col3:
+
+        with st.container(border=True):
+
+            st.subheader("🔮 Forecasting")
+
+            st.caption(
+                "Predict future reservoir filling using SNARIMAX."
+            )
+
+            st.page_link(
+                "pages/7_Forecasting.py",
+                label="Reservoir Filling Forecast",
+                icon="🔮"
+            )
+
+            st.caption("Currently available for NO3.")
+
+    # ========================================================
+    # ABOUT THE PROJECT
+    # ========================================================
 
     st.divider()
 
-    st.caption(
-        "Data sources: NVE API, ENTSO-E Transparency Platform, "
-        "Open-Meteo ERA5 and Norges Bank | IND320 – NMBU, Autumn 2026"
-    )
+    with st.expander("About the Project"):
 
+        st.markdown("""
+        This dashboard was developed as part of the IND320
+        course at the Norwegian University of Life Sciences
+        (NMBU), Autumn 2026.
+
+        The project integrates energy and meteorological data
+        with interactive visualization, time series analysis
+        and machine learning.
+
+        **Data sources**
+
+        - NVE – Reservoir filling and storage statistics
+        - ENTSO-E – Electricity imports and exports
+        - Open-Meteo ERA5 – Historical weather observations
+        - Norges Bank – Exchange rate data
+
+        **Technologies**
+
+        Python, Streamlit, Plotly, Folium, River,
+        Apache Spark, Cassandra and MongoDB Atlas.
+        """)
+
+    st.caption("IND320 · NMBU · Autumn 2026")
 
 # ============================================================
 # NAVIGATION

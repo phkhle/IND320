@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -16,7 +15,7 @@ from src.MongoDB_API import (
 st.title("Electricity Transfers – Norway")
 
 st.write(
-    "Explore real electricity imports and exports between Norway "
+    "Explore electricity imports and exports between Norway "
     "and neighboring countries using ENTSO-E data from 2024–2025."
 )
 
@@ -62,55 +61,159 @@ df_daily["year"] = df_daily["date"].dt.year
 df_daily["month_number"] = df_daily["date"].dt.month
 
 for df in [df_monthly, df_daily]:
+
     df["total_import_mwh"] = pd.to_numeric(
         df["total_import_mwh"], errors="coerce"
     )
+
     df["total_export_mwh"] = pd.to_numeric(
         df["total_export_mwh"], errors="coerce"
     )
 
 
 # ============================================================
-# 4. CREATE TWO-COLUMN LAYOUT
+# 4. FILTERS
 # ============================================================
 
-left_col, right_col = st.columns(2, gap="large")
+st.subheader("Filter Electricity Transfers")
 
+filter_col1, filter_col2, filter_col3 = st.columns(
+    [2, 1, 2],
+    gap="medium"
+)
 
-# ============================================================
-# 5. LEFT COLUMN - ANNUAL IMPORT AND EXPORT
-# ============================================================
+with filter_col1:
 
-with left_col:
-
-    st.subheader("Annual Import and Export")
-
-    connection = st.radio(
+    connection = st.selectbox(
         "Select connection",
         options=sorted(df_monthly["connection"].unique())
     )
 
-    connection_df = df_monthly[
-        df_monthly["connection"] == connection
-    ]
+connection_df = df_monthly[
+    df_monthly["connection"] == connection
+]
 
-    available_years = sorted(
-        connection_df["year"].unique(),
-        reverse=True
-    )
+available_years = sorted(
+    connection_df["year"].unique(),
+    reverse=True
+)
+
+with filter_col2:
 
     selected_year = st.selectbox(
         "Select year",
         options=available_years
     )
 
-    annual_df = connection_df[
-        connection_df["year"] == selected_year
-    ].copy()
 
-    total_import = annual_df["total_import_mwh"].sum()
-    total_export = annual_df["total_export_mwh"].sum()
-    net_import = total_import - total_export
+daily_filtered = df_daily[
+    (df_daily["connection"] == connection) &
+    (df_daily["year"] == selected_year)
+].copy()
+
+month_names = {
+    1: "Jan", 2: "Feb", 3: "Mar",
+    4: "Apr", 5: "May", 6: "Jun",
+    7: "Jul", 8: "Aug", 9: "Sep",
+    10: "Oct", 11: "Nov", 12: "Dec"
+}
+
+available_months = sorted(
+    daily_filtered["month_number"].unique()
+)
+
+month_options = [
+    month_names[month] for month in available_months
+]
+
+with filter_col3:
+
+    selected_month_labels = st.multiselect(
+        "Select months (daily chart)",
+        options=month_options,
+        default=month_options[:1],
+        placeholder="Select months"
+    )
+
+selected_month_numbers = [
+    month for month, name in month_names.items()
+    if name in selected_month_labels
+]
+
+
+# ============================================================
+# 5. ANNUAL SUMMARY
+# ============================================================
+
+annual_df = connection_df[
+    connection_df["year"] == selected_year
+].copy()
+
+total_import = annual_df["total_import_mwh"].sum()
+total_export = annual_df["total_export_mwh"].sum()
+net_import = total_import - total_export
+
+st.divider()
+
+st.subheader(f"Annual Summary – {connection} ({selected_year})")
+
+metric_col1, metric_col2, metric_col3 = st.columns(3)
+
+with metric_col1:
+
+    st.metric(
+        "Total Import (MWh)",
+        f"{total_import:,.0f}"
+    )
+
+with metric_col2:
+
+    st.metric(
+        "Total Export (MWh)",
+        f"{total_export:,.0f}"
+    )
+
+with metric_col3:
+
+    st.metric(
+        "Net Import (MWh)",
+        f"{net_import:,.0f}"
+    )
+
+st.caption(
+    "Annual totals are calculated for the selected connection "
+    "and year, independently of the selected months."
+)
+
+st.divider()
+
+
+# ============================================================
+# 6. SHARED CHART SETTINGS
+# ============================================================
+
+direction_colors = {
+    "Import": "#0068C9",
+    "Export": "#83C9FF"
+}
+
+chart_height = 420
+
+left_col, right_col = st.columns(
+    [2, 3],
+    gap="large"
+)
+
+
+# ============================================================
+# 7. LEFT COLUMN - ANNUAL IMPORT AND EXPORT
+# ============================================================
+
+with left_col:
+
+    st.subheader("Annual Import and Export")
+
+    st.caption(f"{connection} | Full year {selected_year}")
 
     pie_df = pd.DataFrame({
         "Direction": ["Import", "Export"],
@@ -124,76 +227,70 @@ with left_col:
             names="Direction",
             values="MWh",
             hole=0.3,
-            title=f"{connection} – {selected_year}"
+            color="Direction",
+            color_discrete_map=direction_colors
+        )
+
+        fig_pie.update_traces(
+            textposition="inside",
+            textinfo="percent",
+            hovertemplate=(
+                "%{label}<br>"
+                "%{value:,.0f} MWh<br>"
+                "%{percent}"
+                "<extra></extra>"
+            )
+        )
+
+        fig_pie.update_layout(
+            height=chart_height,
+
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+
+            margin=dict(
+                l=15,
+                r=15,
+                t=20,
+                b=60
+            ),
+
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.05,
+                xanchor="center",
+                x=0.5,
+                title_text=""
+            )
         )
 
         st.plotly_chart(
             fig_pie,
-            use_container_width=True
+            use_container_width=True,
+            theme="streamlit"
         )
 
     else:
-        st.info("No electricity transfers for this period.")
 
-    metric_col1, metric_col2 = st.columns(2)
-
-    with metric_col1:
-        st.metric(
-            "Import (MWh)",
-            f"{total_import:,.0f}"
+        st.info(
+            "No electricity transfers for this period."
         )
-
-    with metric_col2:
-        st.metric(
-            "Export (MWh)",
-            f"{total_export:,.0f}"
-        )
-
-    st.metric(
-        "Net Import (MWh)",
-        f"{net_import:,.0f}"
-    )
 
 
 # ============================================================
-# 6. RIGHT COLUMN - DAILY ELECTRICITY TRANSFERS
+# 8. RIGHT COLUMN - DAILY ELECTRICITY TRANSFERS
 # ============================================================
 
 with right_col:
 
     st.subheader("Daily Electricity Transfers")
 
-    daily_filtered = df_daily[
-        (df_daily["connection"] == connection) &
-        (df_daily["year"] == selected_year)
-    ].copy()
+    months_text = ", ".join(selected_month_labels)
 
-    month_names = {
-        1: "Jan", 2: "Feb", 3: "Mar",
-        4: "Apr", 5: "May", 6: "Jun",
-        7: "Jul", 8: "Aug", 9: "Sep",
-        10: "Oct", 11: "Nov", 12: "Dec"
-    }
-
-    available_months = sorted(
-        daily_filtered["month_number"].unique()
+    st.caption(
+        f"{connection} | {months_text} {selected_year}"
     )
-
-    month_options = [
-        month_names[month] for month in available_months
-    ]
-
-    selected_month_labels = st.pills(
-        "Select months",
-        options=month_options,
-        selection_mode="multi",
-        default=["Jan"] if "Jan" in month_options else []
-    )
-
-    selected_month_numbers = [
-        month for month, name in month_names.items()
-        if name in selected_month_labels
-    ]
 
     plot_daily = daily_filtered[
         daily_filtered["month_number"].isin(
@@ -225,31 +322,63 @@ with right_col:
             x="date",
             y="MWh",
             color="Direction",
-            title=f"{connection} – Daily Transfers ({selected_year})",
+            color_discrete_map=direction_colors,
             labels={
                 "date": "Date",
                 "MWh": "Electricity (MWh)"
             }
         )
 
+        fig_line.update_traces(
+            line=dict(width=2)
+        )
+
         fig_line.update_layout(
+            height=chart_height,
+
             hovermode="x unified",
+
             xaxis_title="Date",
-            yaxis_title="Electricity (MWh)"
+            yaxis_title="Electricity (MWh)",
+
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+
+            margin=dict(
+                l=20,
+                r=15,
+                t=20,
+                b=60
+            ),
+
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.25,
+                xanchor="center",
+                x=0.5,
+                title_text=""
+            )
         )
 
         st.plotly_chart(
             fig_line,
-            use_container_width=True
+            use_container_width=True,
+            theme="streamlit"
         )
 
     else:
-        st.info("Select at least one month to display daily data.")
+
+        st.info(
+            "Select at least one month to display daily data."
+        )
 
 
 # ============================================================
-# 7. DATA SOURCE AND OBSERVATIONS
+# 9. DATA SOURCE AND OBSERVATIONS
 # ============================================================
+
+st.divider()
 
 with st.expander("Data source and observations"):
 

@@ -145,22 +145,15 @@ def aggregate_weather(df, start_date, end_date, property_name):
 # ============================================================
 
 def show_interactive_map():
-    """
-    Display an interactive geographical map with:
 
-    - Electricity price areas (NO1-NO5)
-    - Weather regions (Øst, Vest, Nord)
-    - Temperature and precipitation colouring
-    - Shared region selection
-    """
+    st.header("Explore Norwegian Energy Regions")
 
     # --------------------------------------------------------
-    # 5.1 Initialize session state
+    # 5.1 Initialize shared area selection
     # --------------------------------------------------------
 
     area_type, area_number = get_selected_area()
 
-    # Restore map layer from the shared area selection
     if "map_layer_preference" not in st.session_state:
         st.session_state.map_layer_preference = "Price Area"
 
@@ -170,24 +163,28 @@ def show_interactive_map():
         map_layer = "Price Area"
 
     elif area_type == "VASS":
+
         if map_layer != "Weather Property":
             map_layer = "Water Area"
 
     st.session_state["_map_layer_widget"] = map_layer
 
     # --------------------------------------------------------
-    # 5.2 Layout
+    # 5.2 Map layout
     # --------------------------------------------------------
 
-    col_map, col_selector = st.columns([3, 1])
+    col_map, col_selector = st.columns(
+        [3, 1.3],
+        gap="large"
+    )
 
     # --------------------------------------------------------
-    # 5.3 Controls
+    # 5.3 Map layer selection
     # --------------------------------------------------------
 
     with col_selector:
 
-        st.subheader("Area Selection")
+        st.subheader("Map Settings")
 
         def update_map_layer():
 
@@ -208,8 +205,8 @@ def show_interactive_map():
                     set_selected_area("VASS", 1)
 
         map_layer = st.selectbox(
-            "Select map layer",
-            [
+            "Colour by",
+            options=[
                 "Price Area",
                 "Water Area",
                 "Weather Property"
@@ -217,149 +214,6 @@ def show_interactive_map():
             key="_map_layer_widget",
             on_change=update_map_layer
         )
-
-
-        # ----------------------------------------------------
-        # Shared time period
-        # ----------------------------------------------------
-
-        st.subheader("Time Period")
-
-        st.caption(
-            "The selected period is shared with "
-            "the Forecasting page."
-        )
-
-        try:
-
-            df_forecast_available = get_available_data(
-                region="NO3",
-                exog_cols=st.session_state.get(
-                    "forecast_exog_cols",
-                    ["temperature_mean"]
-                )
-            )
-
-            training_start, training_end = show_training_period(
-                df=df_forecast_available,
-                prefix="map",
-                disabled=False
-            )
-
-            # Get the shared forecast horizon
-            horizon = st.session_state.forecast_horizon
-
-            # Find the last available training observation
-            last_observation = df_forecast_available.loc[
-                (
-                    df_forecast_available["dato_Id"]
-                    >= pd.Timestamp(training_start)
-                ) &
-                (
-                    df_forecast_available["dato_Id"]
-                    <= pd.Timestamp(training_end)
-                ),
-                "dato_Id"
-            ].max()
-
-            if pd.notna(last_observation):
-
-                forecast_start = (
-                    last_observation + pd.Timedelta(weeks=1)
-                ).date()
-
-                forecast_end = (
-                    last_observation + pd.Timedelta(weeks=horizon)
-                ).date()
-
-                st.caption(
-                    f"Forecast horizon: {horizon} weeks"
-                )
-
-                st.caption(
-                    f"Forecast period: "
-                    f"{forecast_start} – {forecast_end}"
-                )
-
-        except Exception as error:
-
-            st.warning(
-                f"Could not load time period: {error}"
-            )
-
-        st.divider()
-        # ----------------------------------------------------
-        # Initialize weather settings
-        # ----------------------------------------------------
-
-        weather_property = None
-        weather_values = {}
-        color_scale = None
-
-        # ----------------------------------------------------
-        # Weather controls
-        # ----------------------------------------------------
-
-        if map_layer == "Weather Property":
-
-            weather_property = st.selectbox(
-                "Weather property",
-                ["Temperature", "Precipitation"],
-                key="weather_property"
-            )
-
-            weather_df = load_weather_data()
-
-            if weather_df.empty:
-
-                st.warning("No weather data available.")
-                st.stop()
-
-            # Available weather period
-            min_weather_date = weather_df["time"].min().date()
-            max_weather_date = weather_df["time"].max().date()
-
-            # Use the shared training period
-            start_date = st.session_state.training_start
-            end_date = st.session_state.training_end
-
-            st.caption(
-            f"Selected period: {start_date} – {end_date}"
-        )
-
-            st.caption(
-            f"Available map weather data: "
-            f"{min_weather_date} – {max_weather_date}"
-        )
-
-            # Check weather data coverage
-            if (
-                end_date < min_weather_date
-                or start_date > max_weather_date
-            ):
-
-                st.warning(
-                    "No map weather data is available "
-                    "for the selected training period."
-                )
-
-            elif (
-                start_date < min_weather_date
-                or end_date > max_weather_date
-            ):
-
-                st.warning(
-                    "Weather data only covers part of the "
-                    "selected training period. The map displays "
-                    "aggregated values from available observations."
-                )
-
-                st.caption(
-                    f"Effective weather period: "
-                    f"{max(start_date, min_weather_date)} – "
-                    f"{min(end_date, max_weather_date)}"
-                )
-                    
 
     # --------------------------------------------------------
     # 5.4 Select geographical boundaries
@@ -388,10 +242,8 @@ def show_interactive_map():
         for feature in geojson["features"]
     })
 
-    # Read the shared area selection
     area_type, area_number = get_selected_area()
 
-    # Map region names to NVE area numbers
     if map_layer == "Price Area":
 
         region_mapping = {
@@ -410,7 +262,6 @@ def show_interactive_map():
 
         map_area_type = "VASS"
 
-    # Find the selected region on the current map
     selected_region = None
 
     if area_type == map_area_type:
@@ -425,9 +276,8 @@ def show_interactive_map():
             None
         )
 
-
     # --------------------------------------------------------
-    # 5.5 Region selector
+    # 5.5 Region selection
     # --------------------------------------------------------
 
     with col_selector:
@@ -456,105 +306,173 @@ def show_interactive_map():
 
         if area_type == "NO":
 
-            st.info(
-                "Selected area: Norway. "
-                "The national area is not available on this map. "
-                "Select a region to change the shared area."
+            st.caption(
+                "Select a region to explore regional data."
             )
 
-        else:
-
-            st.info(
-                f"Selected area: "
-                f"{format_area_name(area_type, area_number)}"
-            )
-     
-
     # --------------------------------------------------------
-    # 5.6 Weather values and colour scale
+    # 5.6 Weather settings
     # --------------------------------------------------------
+
+    weather_property = None
+    weather_values = {}
+    color_scale = None
 
     if map_layer == "Weather Property":
 
-        weather_df = load_weather_data()
-
-        weather_values = aggregate_weather(
-            weather_df,
-            start_date,
-            end_date,
-            weather_property
-        )
-
-        # Only use regions present in the current GeoJSON
-        weather_values = {
-            region: value
-            for region, value in weather_values.items()
-            if region in regions and pd.notna(value)
-        }
-
-        if weather_values:
-
-            values = list(weather_values.values())
-
-            if weather_property == "Temperature":
-                min_value = -40
-                max_value = 40
-
-                colors = [
-                    "#2166AC",
-                    "#67A9CF",
-                    "#F7F7F7",
-                    "#EF8A62",
-                    "#B2182B"
-                ]
-
-                unit = "°C"
-
-            else:
-                min_value = 0
-                max_value = max(max(values), 1)
-
-                # Light to dark blue for precipitation
-                colors = [
-                    "#EFF6FF",
-                    "#93C5FD",
-                    "#3B82F6",
-                    "#1D4ED8",
-                    "#1E3A8A"
-                ]
-
-                unit = "mm"
-
-            color_scale = cm.LinearColormap(
-                colors=colors,
-                vmin=min_value,
-                vmax=max_value
-            )
-
-            color_scale.caption = (
-                f"{weather_property} ({unit})"
-            )
-
         with col_selector:
 
-            if weather_values:
-                st.caption(
-                    "Weather data available for: "
-                    + ", ".join(sorted(weather_values))
-                )
+            weather_property = st.selectbox(
+                "Weather property",
+                options=[
+                    "Temperature",
+                    "Precipitation"
+                ],
+                key="weather_property"
+            )
+
+            weather_df = load_weather_data()
+
+            # Only include regions displayed on the map
+            if not weather_df.empty:
+
+                weather_df = weather_df[
+                    weather_df["region"].isin(regions)
+                ].copy()
+
+            if weather_df.empty:
+
+                st.warning("No weather data available.")
+
             else:
-                st.warning(
-                    "No aggregated weather data available "
-                    "for these regions and dates."
+
+                min_weather_date = (
+                    weather_df["time"].min().date()
                 )
 
+                max_weather_date = (
+                    weather_df["time"].max().date()
+                )
+
+                # Independent weather period
+                if min_weather_date < max_weather_date:
+
+                    start_date, end_date = st.slider(
+                        "Weather period",
+                        min_value=min_weather_date,
+                        max_value=max_weather_date,
+                        value=(
+                            min_weather_date,
+                            max_weather_date
+                        ),
+                        format="DD MMM YYYY",
+                        key="map_weather_period"
+                    )
+
+                else:
+
+                    start_date = min_weather_date
+                    end_date = max_weather_date
+
+                weather_values = aggregate_weather(
+                    weather_df,
+                    start_date,
+                    end_date,
+                    weather_property
+                )
+
+                weather_values = {
+                    region: value
+                    for region, value in weather_values.items()
+                    if region in regions
+                    and pd.notna(value)
+                }
+
+                if not weather_values:
+
+                    st.warning(
+                        "No weather observations for this period."
+                    )
+
+                else:
+
+                    st.caption(
+                        "Grey areas indicate unavailable weather data."
+                    )
+
     # --------------------------------------------------------
-    # 5.7 Polygon styling
+    # 5.7 Weather colour scale
     # --------------------------------------------------------
 
+    if weather_values:
+
+        if weather_property == "Temperature":
+
+            min_value = -40
+            max_value = 40
+
+            colors = [
+                "#2166AC",
+                "#67A9CF",
+                "#F7F7F7",
+                "#EF8A62",
+                "#B2182B"
+            ]
+
+            unit = "°C"
+
+        else:
+
+            min_value = 0
+
+            max_value = max(
+                max(weather_values.values()),
+                1
+            )
+
+            colors = [
+                "#EFF6FF",
+                "#93C5FD",
+                "#3B82F6",
+                "#1D4ED8",
+                "#1E3A8A"
+            ]
+
+            unit = "mm"
+
+        color_scale = cm.LinearColormap(
+            colors=colors,
+            vmin=min_value,
+            vmax=max_value
+        )
+
+        color_scale.caption = (
+            f"{weather_property} ({unit})"
+        )
+
+    # --------------------------------------------------------
+    # 5.8 Geographical colours
+    # --------------------------------------------------------
+
+    price_colors = {
+        "NO1": "#60A5FA",
+        "NO2": "#F59E0B",
+        "NO3": "#34A399",
+        "NO4": "#A78BFA",
+        "NO5": "#F472B6"
+    }
+
+    water_colors = {
+        "Øst": "#60A5FA",
+        "Vest": "#34A399",
+        "Nord": "#A78BFA"
+    }
+
+    # --------------------------------------------------------
+    # 5.9 Polygon styling
+    # --------------------------------------------------------
 
     def style_function(feature):
-        """Style regions according to layer and selected values."""
 
         region = feature["properties"]["region"]
 
@@ -562,32 +480,54 @@ def show_interactive_map():
 
         if map_layer == "Weather Property":
 
-            if region in weather_values and color_scale is not None:
-                fill_color = color_scale(weather_values[region])
+            if (
+                region in weather_values
+                and color_scale is not None
+            ):
+
+                fill_color = color_scale(
+                    weather_values[region]
+                )
+
                 opacity = 0.7
 
             else:
+
                 fill_color = "#D1D5DB"
                 opacity = 0.4
 
+        elif map_layer == "Price Area":
+
+            fill_color = price_colors.get(
+                region.replace(" ", ""),
+                "#D1D5DB"
+            )
+
+            opacity = 0.45
+
         else:
-            fill_color = "#93C5FD"
-            opacity = 0.35
+
+            fill_color = water_colors.get(
+                region,
+                "#D1D5DB"
+            )
+
+            opacity = 0.45
 
         return {
             "fillColor": fill_color,
-            "color": "#1D4ED8" if is_selected else "#475569",
+            "color": (
+                "#1D4ED8" if is_selected else "#475569"
+            ),
             "weight": 4 if is_selected else 1,
             "fillOpacity": opacity
         }
 
     # --------------------------------------------------------
-    # 5.8 Create map
+    # 5.10 Create interactive map
     # --------------------------------------------------------
 
     with col_map:
-
-        st.subheader("Interactive Map")
 
         m = folium.Map(
             location=[64.5, 12.0],
@@ -595,7 +535,7 @@ def show_interactive_map():
             tiles="OpenStreetMap"
         )
 
-        folium.GeoJson(
+        geojson_layer = folium.GeoJson(
             geojson,
             name=layer_name,
             style_function=style_function,
@@ -605,9 +545,11 @@ def show_interactive_map():
             )
         ).add_to(m)
 
+        # Automatically fit the geographical boundaries
+        m.fit_bounds(geojson_layer.get_bounds())
+
         if color_scale is not None:
             color_scale.add_to(m)
-
 
         def update_map_click():
 
@@ -637,11 +579,107 @@ def show_interactive_map():
 
         st_folium(
             m,
-            height=480,
+            height=520,
             width=None,
             key=map_key,
             returned_objects=["last_active_drawing"],
             on_change=update_map_click
         )
 
+    # --------------------------------------------------------
+    # 5.11 Shared forecast settings
+    # --------------------------------------------------------
+
+    with st.expander("Forecast Settings – NO3"):
+
+        try:
+
+            df_forecast_available = get_available_data(
+                region="NO3",
+                exog_cols=st.session_state.get(
+                    "forecast_exog_cols",
+                    ["temperature_mean"]
+                )
+            )
+
+            forecast_col1, forecast_col2 = st.columns(2)
+
+            with forecast_col1:
+
+                training_start, training_end = (
+                    show_training_period(
+                        df=df_forecast_available,
+                        prefix="map",
+                        disabled=False
+                    )
+                )
+
+            with forecast_col2:
+
+                st.session_state["_map_horizon_widget"] = (
+                    st.session_state.forecast_horizon
+                )
+
+                def update_horizon():
+
+                    st.session_state.forecast_horizon = (
+                        st.session_state["_map_horizon_widget"]
+                    )
+
+                    st.session_state.use_default_forecast = False
+
+                horizon = st.slider(
+                    "Forecast horizon (weeks)",
+                    min_value=1,
+                    max_value=26,
+                    key="_map_horizon_widget",
+                    on_change=update_horizon
+                )
+
+                last_observation = df_forecast_available.loc[
+                    (
+                        df_forecast_available["dato_Id"]
+                        >= pd.Timestamp(training_start)
+                    ) &
+                    (
+                        df_forecast_available["dato_Id"]
+                        <= pd.Timestamp(training_end)
+                    ),
+                    "dato_Id"
+                ].max()
+
+                if pd.notna(last_observation):
+
+                    forecast_start = (
+                        last_observation
+                        + pd.Timedelta(weeks=1)
+                    ).date()
+
+                    forecast_end = (
+                        last_observation
+                        + pd.Timedelta(weeks=horizon)
+                    ).date()
+
+                    st.caption(
+                        f"Forecast period: "
+                        f"{forecast_start} – {forecast_end}"
+                    )
+
+                else:
+
+                    st.warning(
+                        "No observations in the training period."
+                    )
+
+        except Exception as error:
+
+            st.warning(
+                f"Could not load forecast settings: {error}"
+            )
+
+        st.page_link(
+            "pages/7_Forecasting.py",
+            label="Open Reservoir Filling Forecast",
+            icon="🔮"
+        )
    

@@ -205,9 +205,6 @@ def show_training_period(df, prefix, disabled=False):
         # Switch to custom configuration
         st.session_state.use_default_forecast = False
 
-    st.caption(
-        f"Available data: {min_date} – {max_date}"
-    )
 
     training_start = st.date_input(
         "Training start",
