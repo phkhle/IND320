@@ -69,14 +69,13 @@ df = (
     .reset_index(drop=True)
 )
 
-
 # ============================================================
 # 4. FILTERS
 # ============================================================
 
 st.subheader("Select Data")
 
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([1, 2])
 
 with col1:
     area_type = st.radio(
@@ -90,21 +89,7 @@ with col1:
         )
     )
 
-with col2:
-    period = st.selectbox(
-        "Time period",
-        options=[
-            "First month",
-            "Last 3 months",
-            "Last 6 months",
-            "Last 12 months",
-            "All data"
-        ],
-        index=3
-    )
-
-
-# Filter area type.
+# Filter area type
 df_filtered = df[df["omrType"] == area_type].copy()
 
 if df_filtered.empty:
@@ -116,34 +101,27 @@ if df_filtered.empty:
 # 5. FILTER BY PERIOD
 # ============================================================
 
-first_date = df_filtered["dato_Id"].min()
-last_date = df_filtered["dato_Id"].max()
+first_date = df_filtered["dato_Id"].min().date()
+last_date = df_filtered["dato_Id"].max().date()
 
-if period == "First month":
-    first_month = first_date.to_period("M")
+with col2:
+    start_date, end_date = st.slider(
+        "Select time period",
+        min_value=first_date,
+        max_value=last_date,
+        value=(first_date, last_date),
+        format="YYYY-MM-DD"
+    )
 
-    df_filtered = df_filtered[
-        df_filtered["dato_Id"].dt.to_period("M") == first_month
-    ]
+# Filter selected date range
+df_filtered = df_filtered[
+    (df_filtered["dato_Id"].dt.date >= start_date)
+    & (df_filtered["dato_Id"].dt.date <= end_date)
+].copy()
 
-elif period == "Last 3 months":
-    start_date = last_date - pd.DateOffset(months=3)
-    df_filtered = df_filtered[
-        df_filtered["dato_Id"] >= start_date
-    ]
-
-elif period == "Last 6 months":
-    start_date = last_date - pd.DateOffset(months=6)
-    df_filtered = df_filtered[
-        df_filtered["dato_Id"] >= start_date
-    ]
-
-elif period == "Last 12 months":
-    start_date = last_date - pd.DateOffset(months=12)
-    df_filtered = df_filtered[
-        df_filtered["dato_Id"] >= start_date
-    ]
-
+if df_filtered.empty:
+    st.warning("No observations for the selected period.")
+    st.stop()
 
 # ============================================================
 # 6. OVERVIEW TABLE WITH MINI CHARTS
@@ -181,8 +159,8 @@ for area_number, group in df_filtered.groupby("omrnr"):
         "Area": area_name,
         "Observations": len(group),
         "Latest date": latest["dato_Id"],
-        "Filling level": latest["fyllingsgrad"],
-        "Weekly change": latest["endring_fyllingsgrad"],
+        "Filling level": latest["fyllingsgrad"] * 100,
+        "Weekly change": latest["endring_fyllingsgrad"] * 100,
         "Filling trend": filling_trend,
         "Capacity trend": capacity_trend
     })
