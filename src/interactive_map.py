@@ -13,6 +13,15 @@ from src.forecast_controls import (
     get_available_data,
     show_training_period
 )
+
+from src.area_selector import (
+    get_selected_area,
+    set_selected_area,
+    format_area_name,
+    WATER_AREAS
+)
+
+
 # ============================================================
 # 1. FILE PATHS
 # ============================================================
@@ -149,11 +158,22 @@ def show_interactive_map():
     # 5.1 Initialize session state
     # --------------------------------------------------------
 
-    if "map_layer" not in st.session_state:
-        st.session_state.map_layer = "Price Area"
+    area_type, area_number = get_selected_area()
 
-    if "selected_region" not in st.session_state:
-        st.session_state.selected_region = "NO1"
+    # Restore map layer from the shared area selection
+    if "map_layer_preference" not in st.session_state:
+        st.session_state.map_layer_preference = "Price Area"
+
+    map_layer = st.session_state.map_layer_preference
+
+    if area_type == "EL":
+        map_layer = "Price Area"
+
+    elif area_type == "VASS":
+        if map_layer != "Weather Property":
+            map_layer = "Water Area"
+
+    st.session_state["_map_layer_widget"] = map_layer
 
     # --------------------------------------------------------
     # 5.2 Layout
@@ -169,6 +189,24 @@ def show_interactive_map():
 
         st.subheader("Area Selection")
 
+        def update_map_layer():
+
+            new_layer = st.session_state["_map_layer_widget"]
+
+            st.session_state.map_layer_preference = new_layer
+
+            current_type, current_number = get_selected_area()
+
+            if new_layer == "Price Area":
+
+                if current_type != "EL":
+                    set_selected_area("EL", 3)
+
+            else:
+
+                if current_type != "VASS":
+                    set_selected_area("VASS", 1)
+
         map_layer = st.selectbox(
             "Select map layer",
             [
@@ -176,7 +214,8 @@ def show_interactive_map():
                 "Water Area",
                 "Weather Property"
             ],
-            key="map_layer"
+            key="_map_layer_widget",
+            on_change=update_map_layer
         )
 
 
@@ -349,9 +388,43 @@ def show_interactive_map():
         for feature in geojson["features"]
     })
 
-    # Reset region if it does not exist in the new layer
-    if st.session_state.selected_region not in regions:
-        st.session_state.selected_region = regions[0]
+    # Read the shared area selection
+    area_type, area_number = get_selected_area()
+
+    # Map region names to NVE area numbers
+    if map_layer == "Price Area":
+
+        region_mapping = {
+            region: int(region.replace("NO", "").strip())
+            for region in regions
+        }
+
+        map_area_type = "EL"
+
+    else:
+
+        region_mapping = {
+            name: number
+            for number, name in WATER_AREAS.items()
+        }
+
+        map_area_type = "VASS"
+
+    # Find the selected region on the current map
+    selected_region = None
+
+    if area_type == map_area_type:
+
+        selected_region = next(
+            (
+                region
+                for region, number in region_mapping.items()
+                if number == area_number
+                and region in regions
+            ),
+            None
+        )
+
 
     # --------------------------------------------------------
     # 5.5 Region selector
@@ -359,16 +432,42 @@ def show_interactive_map():
 
     with col_selector:
 
+        st.session_state["_map_region_widget"] = selected_region
+
+        def update_map_region():
+
+            region = st.session_state["_map_region_widget"]
+
+            if region in region_mapping:
+
+                set_selected_area(
+                    map_area_type,
+                    region_mapping[region]
+                )
+
         st.selectbox(
             "Select region",
             options=regions,
-            key="selected_region"
+            index=None,
+            placeholder="Select a region",
+            key="_map_region_widget",
+            on_change=update_map_region
         )
 
-        st.info(
-            f"Selected region: {st.session_state.selected_region}"
-        )
+        if area_type == "NO":
 
+            st.info(
+                "Selected area: Norway. "
+                "The national area is not available on this map. "
+                "Select a region to change the shared area."
+            )
+
+        else:
+
+            st.info(
+                f"Selected area: "
+                f"{format_area_name(area_type, area_number)}"
+            )
      
 
     # --------------------------------------------------------
@@ -453,7 +552,6 @@ def show_interactive_map():
     # 5.7 Polygon styling
     # --------------------------------------------------------
 
-    selected_region = st.session_state.selected_region
 
     def style_function(feature):
         """Style regions according to layer and selected values."""
@@ -510,22 +608,14 @@ def show_interactive_map():
         if color_scale is not None:
             color_scale.add_to(m)
 
-        map_data = st_folium(
-            m,
-            height=480,
-            width=None,
-            key=f"interactive_map_{map_layer}"
-        )
 
-    # --------------------------------------------------------
-    # 5.9 Handle map clicks
-    # --------------------------------------------------------
+        def update_map_click():
 
-    if map_data:
+            map_data = st.session_state.get(map_key, {})
 
-        clicked_feature = map_data.get("last_active_drawing")
-
-        if clicked_feature:
+            clicked_feature = (
+                map_data.get("last_active_drawing") or {}
+            )
 
             clicked_region = (
                 clicked_feature
@@ -533,9 +623,25 @@ def show_interactive_map():
                 .get("region")
             )
 
-            if (
-                clicked_region in regions
-                and clicked_region != st.session_state.selected_region
-            ):
-                st.session_state.selected_region = clicked_region
-                st.rerun()
+            if clicked_region in region_mapping:
+
+                set_selected_area(
+                    map_area_type,
+                    region_mapping[clicked_region]
+                )
+
+        map_key = (
+            f"interactive_map_{map_layer}_"
+            f"{area_type}_{area_number}"
+        )
+
+        st_folium(
+            m,
+            height=480,
+            width=None,
+            key=map_key,
+            returned_objects=["last_active_drawing"],
+            on_change=update_map_click
+        )
+
+   

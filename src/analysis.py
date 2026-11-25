@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from scipy.fft import dct, idct
 from scipy.signal import spectrogram
 from sklearn.neighbors import LocalOutlierFactor
 from statsmodels.tsa.seasonal import STL
-import plotly.graph_objects as go
 
 
 # High-pass filter using DCT
@@ -256,8 +256,8 @@ def plot_filling_stl(
     robust=True
 ):
     """
-    Perform STL decomposition on reservoir filling degree.
-
+    Perform STL decomposition on reservoir filling degree
+    and visualize the components using Plotly.
     """
 
     # Prepare time series
@@ -287,17 +287,87 @@ def plot_filling_stl(
 
     result = stl.fit()
 
-    # Plot decomposition
-    fig = result.plot()
-    fig.set_size_inches(14, 9)
+    # ========================================================
+    # INTERACTIVE PLOTLY FIGURE
+    # ========================================================
 
-    fig.suptitle(
-        "STL Decomposition of Reservoir Filling Degree",
-        fontsize=14,
-        y=1.02
+    fig = make_subplots(
+        rows=4,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.06,
+        subplot_titles=[
+            "Observed",
+            "Trend",
+            "Seasonal",
+            "Residual"
+        ]
     )
 
-    plt.tight_layout()
+    components = [
+        ("Observed", series, "#397D73"),
+        ("Trend", result.trend, "#2563EB"),
+        ("Seasonal", result.seasonal, "#D97706"),
+        ("Residual", result.resid, "#64748B")
+    ]
+
+    for row, (name, values, color) in enumerate(
+        components, start=1
+    ):
+
+        fig.add_trace(
+            go.Scatter(
+                x=series.index,
+                y=values,
+                mode="lines",
+                name=name,
+                line=dict(
+                    color=color,
+                    width=1.5
+                ),
+                hovertemplate=(
+                    "%{x|%Y-%m-%d}<br>"
+                    "%{y:.3f}"
+                    "<extra></extra>"
+                )
+            ),
+            row=row,
+            col=1
+        )
+
+        fig.update_yaxes(
+            title_text=name,
+            row=row,
+            col=1
+        )
+
+    # Zero reference lines
+    for row in [3, 4]:
+
+        fig.add_hline(
+            y=0,
+            line_dash="dash",
+            line_color="gray",
+            opacity=0.5,
+            row=row,
+            col=1
+        )
+
+    fig.update_xaxes(
+        title_text="Date",
+        row=4,
+        col=1
+    )
+
+    fig.update_layout(
+        title="STL Decomposition of Reservoir Filling Degree",
+        height=850,
+        showlegend=False,
+        hovermode="x unified",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=60, r=30, t=80, b=40)
+    )
 
     # Summary statistics
     summary = {
@@ -315,8 +385,6 @@ def plot_filling_stl(
     return fig, summary
 
 
-
-
 # Plot spectrogram of reservoir filling degree
 def plot_filling_spectrogram(
     df,
@@ -326,8 +394,8 @@ def plot_filling_spectrogram(
     overlap=130
 ):
     """
-    Plot a spectrogram of weekly reservoir filling degree.
-
+    Plot an interactive spectrogram of weekly
+    reservoir filling degree.
     """
 
     data = df.sort_values(date_col).copy()
@@ -351,7 +419,9 @@ def plot_filling_spectrogram(
     )
 
     # Convert window positions to calendar dates
-    dates = pd.to_datetime(data[date_col]).reset_index(drop=True)
+    dates = pd.to_datetime(
+        data[date_col]
+    ).reset_index(drop=True)
 
     time_indices = np.clip(
         np.round(times).astype(int),
@@ -361,40 +431,53 @@ def plot_filling_spectrogram(
 
     spectrogram_dates = dates.iloc[time_indices]
 
-    # Plot spectrogram
-    fig, ax = plt.subplots(figsize=(14, 6))
+    # Convert power to decibels
+    power_db = 10 * np.log10(power + 1e-12)
 
-    mesh = ax.pcolormesh(
-        spectrogram_dates,
-        frequencies,
-        10 * np.log10(power + 1e-12),
-        shading="auto",
-        cmap="viridis"
+    # ========================================================
+    # INTERACTIVE PLOTLY HEATMAP
+    # ========================================================
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Heatmap(
+            x=spectrogram_dates,
+            y=frequencies,
+            z=power_db,
+            colorscale="Viridis",
+            colorbar=dict(
+                title="Power (dB)"
+            ),
+            hovertemplate=(
+                "Date: %{x|%Y-%m-%d}<br>"
+                "Frequency: %{y:.4f} cycles/week<br>"
+                "Power: %{z:.2f} dB"
+                "<extra></extra>"
+            )
+        )
     )
 
     # Mark the annual frequency
-    ax.axhline(
-        1 / 52,
-        color="red",
-        linestyle="--",
-        label="Annual cycle (52 weeks)"
+    fig.add_hline(
+        y=1 / 52,
+        line_color="red",
+        line_dash="dash",
+        line_width=2,
+        annotation_text="Annual cycle (52 weeks)",
+        annotation_position="top left",
+        annotation_font_color="red"
     )
 
-    ax.set(
-        title="Spectrogram of Reservoir Filling Degree – NO3",
-        xlabel="Year",
-        ylabel="Frequency (cycles/week)"
+    fig.update_layout(
+        title="Spectrogram of Reservoir Filling Degree",
+        xaxis_title="Date",
+        yaxis_title="Frequency (cycles/week)",
+        height=500,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=60, r=30, t=60, b=40)
     )
-
-    ax.legend()
-
-    fig.colorbar(
-        mesh,
-        ax=ax,
-        label="Power (dB)"
-    )
-
-    plt.tight_layout()
 
     summary = {
         "n_observations": len(values),

@@ -51,7 +51,7 @@ def get_entsoe_data(start_date, end_date, test_mode=False):
         for connection in CONNECTIONS:
             for i, timestamp in enumerate(dates):
                 rows.append({
-                    "timestamp": timestamp,
+                    "timestamp": timestamp.tz_convert("UTC"),
                     "connection": connection,
                     "import_mwh": float(100 + i % 50),
                     "export_mwh": float(200 + i % 70),

@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 from src.area_selector import select_area
 
 from src.NVE_API import get_nve_data
@@ -123,8 +122,12 @@ with tab1:
             robust=robust
         )
 
-        st.pyplot(fig)
-        plt.close(fig)
+  
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            theme="streamlit"
+        )
 
         with st.expander("STL Summary"):
             st.json(summary)
@@ -174,8 +177,11 @@ with tab2:
             overlap=overlap
         )
 
-        st.pyplot(fig)
-        plt.close(fig)
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            theme="streamlit"
+        )
 
         with st.expander("Spectrogram Summary"):
             st.json(summary)

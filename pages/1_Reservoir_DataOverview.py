@@ -4,7 +4,10 @@ import pandas as pd
 from streamlit.column_config import LineChartColumn
 
 from src.NVE_API import get_nve_data
-
+from src.area_selector import (
+    get_selected_area,
+    set_selected_area
+)
 
 # ============================================================
 # 1. PAGE HEADER
@@ -78,10 +81,37 @@ st.subheader("Select Data")
 col1, col2 = st.columns([1, 2])
 
 with col1:
+
+    selected_type, selected_number = get_selected_area()
+
+    st.session_state["_overview_area_type"] = selected_type
+
+    def update_area_type():
+
+        new_type = st.session_state["_overview_area_type"]
+
+        current_type, current_number = get_selected_area()
+
+        available_numbers = sorted(
+            df.loc[
+                df["omrType"] == new_type,
+                "omrnr"
+            ].dropna().unique().tolist()
+        )
+
+        if available_numbers:
+
+            if current_number not in available_numbers:
+                current_number = available_numbers[0]
+
+            set_selected_area(new_type, current_number)
+
     area_type = st.radio(
         "Area type",
         options=["EL", "NO", "VASS"],
         horizontal=True,
+        key="_overview_area_type",
+        on_change=update_area_type,
         help=(
             "EL: Electricity price areas | "
             "NO: Norway | "

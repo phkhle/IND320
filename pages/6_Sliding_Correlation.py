@@ -122,10 +122,18 @@ weather["time"] = (
 weather = weather.set_index("time")
 
 # NVE dates represent weekly observations on Sundays
-weekly_weather = weather.resample("W-SUN").agg({
-    "temperature_mean": "mean",
-    "precipitation_mean": "sum"
-}).reset_index()
+weekly_weather = weather.resample("W-SUN").agg(
+    temperature_mean=("temperature_mean", "mean"),
+    precipitation_mean=("precipitation_mean", "sum"),
+    n_temperature=("temperature_mean", "count"),
+    n_precipitation=("precipitation_mean", "count")
+).reset_index()
+
+# Keep only complete weeks (7 * 24 hours)
+weekly_weather = weekly_weather.loc[
+    (weekly_weather["n_temperature"] == 168) &
+    (weekly_weather["n_precipitation"] == 168)
+].drop(columns=["n_temperature", "n_precipitation"])
 
 weekly_weather = weekly_weather.rename(columns={"time": "date"})
 
@@ -188,8 +196,16 @@ fig, result = plot_sliding_correlation(
     lag=lag
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor="rgba(0,0,0,0)"
+)
 
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    theme="streamlit"
+)
 st.caption(
     f"Using {len(df)} weekly observations. "
     "Positive lag means earlier weather is compared "
